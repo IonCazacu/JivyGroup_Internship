@@ -1,0 +1,138 @@
+@import url("base.css");
+
+header {
+  
+}
+
+main {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.container {
+  width: 770px;
+  max-width: 100%;
+  /* padding: 0 .75rem; */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
+.container__form {
+  background-color: #fff;
+  /* height: 25rem; */
+  width: 20rem;
+  padding: .75rem 0;
+  box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, .2),
+    0 1px 1px 0 rgba(0, 0, 0, .141),
+    0 1px 3px 0 rgba(0, 0, 0, .122);
+  -moz-box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, .2),
+    0 1px 1px 0 rgba(0, 0, 0, .141),
+    0 1px 3px 0 rgba(0, 0, 0, .122);
+  -webkit-box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, .2),
+    0 1px 1px 0 rgba(0, 0, 0, .141),
+    0 1px 3px 0 rgba(0, 0, 0, .122);
+}
+
+.container__form .form-header {
+  margin-bottom: 1rem;
+  padding: 0 .75rem;
+}
+
+.container__form #form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: 0 .75rem;
+}
+
+#form .form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-field label,
+.form-field input {
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+
+.form-field label {
+  margin-bottom: .25rem;
+}
+
+.form-field input {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: .25rem;
+}
+
+.form-field input:not([type=submit]) {
+  margin-bottom: .75rem;
+}
+
+.form-field input:not([type=submit]):focus {
+  outline: 1px solid #86b7fe;
+}
+
+#form input[type=submit] {
+  background-color: #f8f9fa;
+  border: 1px solid #f8f9fa;
+  padding: .375rem .75rem;
+}
+
+#form input[type=submit]:hover {
+  background-color: #d3d4d5;
+  border: 1px solid #c6c7c8;
+}
+
+.form-field .form-input {
+  position: relative;
+  display: flex;
+}
+
+.form-input input {
+  width: 100%;
+}
+
+.form-input button {
+  position: absolute;
+  display: flex;
+  right: .75rem;
+  top: 9px;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  user-select: none;
+}
+
+button i {
+  display: flex;
+  font-size: 14px;
+}
+
+button#eye-fill-btn {
+  display: none;
+}
+
+.error {
+  border-color: red !important;
+}
