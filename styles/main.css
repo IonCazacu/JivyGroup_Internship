@@ -130,7 +130,7 @@ button i {
 }
 
 button#eye-fill-btn {
-  display: none;
+  /* display: none; */
 }
 
 .error {
