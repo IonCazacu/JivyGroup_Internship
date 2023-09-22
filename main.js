@@ -22,7 +22,7 @@ class RegistrationForm {
     }
 
     handleNameValidation($event) {
-
+        
     };
 
     handleEmailValidation($event) {
