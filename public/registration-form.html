@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="./styles/main.css" />
+  <script type="text/javascript" src="./scripts/validators/UsernameValidator.js"></script>
+  <script type="text/javascript" src="./scripts/validators/EmailValidator.js"></script>
+  <script type="text/javascript" src="./scripts/validators/PasswordValidator.js"></script>
+  <script type="text/javascript" src="./scripts/forms/RegistrationForm.js"></script>
+  <script type="text/javascript" src="./scripts/utils/Message.js"></script>
+  <title>Registration Form</title>
+</head>
+<body>
+  <header>
+    Navbar
+  </header>
+  <main>
+    <div class="container">
+      <div class="container__form">
+        <div class="form-header">
+          <h2>Sign Up</h2>
+        </div>
+        <form id="form">
+          <div class="form-field">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              data-validation="username"
+              placeholder="Enter you username"
+               />
+            <ul class="error"></ul>
+          </div>
+        
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input
+              type="text"
+              id="email"
+              data-validation="email"
+              placeholder="Enter your email"
+               />
+            <ul class="error"></ul>
+          </div>
+          
+          <div class="form-field">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              data-validation="password"
+              placeholder="Enter your password"
+                />
+            <ul class="error"></ul>
+          </div>
+          
+          <div class="form-field">
+            <label for="confirm-password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              data-validation="confirm-password"
+              placeholder="Confirm your password"
+                />
+            <ul class="error"></ul>
+          </div>
+          
+          <input type="submit" id="submit" value="Submit" />
+        </form>
+        <div class="form-footer">
+          <!-- <p>Already have an account? <a href="#">Login</a></p> -->
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    Footer
+  </footer>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const registrationForm = new RegistrationForm();
+    });
+  </script>
+</body>
+</html>

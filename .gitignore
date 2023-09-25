@@ -1,0 +1,15 @@
+node_modules/
+
+*.sqlite
+
+config/config.json
+
+package-lock.json
+
+.DS_Store
+
+.vscode/
+
+migrations/
+seeders/
+models/index.js

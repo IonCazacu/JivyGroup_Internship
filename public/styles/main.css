@@ -67,12 +67,12 @@ main {
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 1rem;
 }
 
 .form-field label,
 .form-field input {
   font-size: 12px;
-  letter-spacing: .5px;
 }
 
 .form-field label {
@@ -85,8 +85,14 @@ main {
   border-radius: .25rem;
 }
 
-.form-field input:not([type=submit]) {
-  margin-bottom: .75rem;
+.form-field ul {
+  padding-left: 1.5rem;
+  margin-top: .5rem;
+}
+
+.form-field ul li {
+  font-size: 12px;
+  color: red;
 }
 
 .form-field input:not([type=submit]):focus {
@@ -134,5 +140,9 @@ button#eye-fill-btn {
 }
 
 .error {
-  border-color: red !important;
+  border-color: red;
+}
+
+.success {
+  border-color: green;
 }
