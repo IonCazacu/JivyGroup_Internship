@@ -1,73 +1,92 @@
 import UsernameValidator from '../validators/UsernameValidator.js';
 import EmailValidator from '../validators/EmailValidator.js';
 import PasswordValidator from '../validators/PasswordValidator.js';
-import ConfirmPasswordValidator from '../validators/PasswordValidator.js';
+import ConfirmPasswordValidator from '../validators/ConfirmPasswordValidator.js';
 
 
 class RegistrationForm {
   constructor() {
     this.registrationForm = document.getElementById('form');
+    
     this.registrationForm.addEventListener(
       'submit',
       this.handleSubmit.bind(this)
     );
+
+    this.username = document.getElementById('username');
+    this.email = document.getElementById('email');
+    this.password = document.getElementById('password');
+    this.confirmPassword = document.getElementById('confirm-password');
   }
   
   handleSubmit($event) {
   
     $event.preventDefault();
-  
-    const elementsToValidate = this.getElementsToValidate();
-    let password = {
-      primary: null,
-      secondary: null
-    };
-    
-    for (const element of elementsToValidate) {
+
+    const usernameInst = new UsernameValidator(this.username);
+    const emailInst = new EmailValidator(this.email);
+    const passwordInst = new PasswordValidator(this.password);
+    const confirmPasswordInst = new ConfirmPasswordValidator(
+      this.password,
+      this.confirmPassword
+    );
+
+    let success =  true;
+
+    for (const element of [
+      usernameInst,
+      emailInst,
+      passwordInst,
+      confirmPasswordInst
+    ]) {
       
-      const currentType = element.dataset.validation;
-      let validator;
+      const validationResult = element.validate();
+
+      this.setMessage(validationResult);
+
+      if (!validationResult.isValid) {
+        
+        success = false;
       
-      switch (currentType) {
-
-        case 'confirm-password': {
-          
-          password.secondary = element;
-          validator = new ConfirmPasswordValidator(
-            password.primary,
-            password.secondary
-          );
-          break;
-
-        }
-
-        case 'password': {
-
-          password.primary = element;
-          validator = new PasswordValidator(password.primary);
-          break;
-
-        }
-
-        case 'username': {
-
-          validator = new UsernameValidator(element);
-          break;
-
-        }
-
-        case 'email': {
-
-          validator = new EmailValidator(element);
-          break;
-
-        }
-
       }
       
-      const validationResult = validator.validate();
-      this.setMessage(validationResult);
     }
+
+    if (success) {
+
+      const postData = {
+        username: this.username.value.trim(),
+        email: this.email.value.trim(),
+        password: this.password.value.trim()
+      };
+
+      console.log('form is ok');
+
+      // register an API
+      fetch('http://localhost:8080/users', {
+      
+        method: 'POST',
+      
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      
+        body: JSON.stringify(postData)
+
+      })
+      .then((response) => {
+        
+        console.log('response', response);
+
+      })
+      .catch((error) => {
+        
+        console.error(error);
+      
+      });
+
+    }
+ 
   };
 
   getElementsToValidate() {
@@ -84,7 +103,7 @@ class RegistrationForm {
   }
 
   setMessage( { element = null, isValid = true, messages = null } ) {
-    
+  
     if (element === null) {
       return;
     }
@@ -92,8 +111,7 @@ class RegistrationForm {
     const formField = element.parentElement;
     const errorField = formField.querySelector('.error');
       
-    formField.classList.toggle('error', !isValid);
-    formField.classList.toggle('success', isValid);
+    // element.classList.toggle('error');
 
     if (messages === null) {
 
@@ -119,9 +137,11 @@ class RegistrationForm {
     
     let element = document.createElement(tagName);
     element.innerText = message;
-
+  
     return element;
+
   }
+
 }
 
 

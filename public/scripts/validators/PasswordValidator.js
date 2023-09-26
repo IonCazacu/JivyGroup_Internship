@@ -29,7 +29,6 @@ export default class PasswordValidator {
       }
 
       this.password = password;
-      // this.confirmPassword = confirmPassword;
       this.regex = regex;
     
     } catch (error) {
@@ -63,52 +62,5 @@ export default class PasswordValidator {
   validatePassword() {
     return this.password.value.trim().match(this.regex);
   };
-}
 
-
-export class ConfirmPasswordValidator extends PasswordValidator {
-  constructor(password, confirmPassword = null) {
-    
-    super(password);
-    
-    try {
-      
-      if (confirmPassword === null) {
-      
-        throw new Error("Incorrect class initialization");
-      
-      }
-
-      this.confirmPassword = confirmPassword;
-  
-    } catch (error) {
-  
-      console.error(error);
-  
-    }
-
-  }
-
-  validate() {
-    let returnMessage = {
-      element: this.confirmPassword,
-      isValid: true,
-      messages: null
-    };
-
-    const isConfirmPasswordValid = this.validateConfirmPassword();
-
-    if (!isConfirmPasswordValid) {
-
-      returnMessage.isValid = false;
-      returnMessage.messages = ["Passwords do not match"];
-
-    }
-
-    return returnMessage;
-  }
-
-  validateConfirmPassword() {
-    return this.confirmPassword.value.trim() === this.password.value.trim();
-  };
 }

@@ -1,4 +1,4 @@
-@import url("base.css");
+@import 'base';
 
 header {
   
@@ -85,6 +85,10 @@ main {
   border-radius: .25rem;
 }
 
+.form-field input.error {
+  border: 1px solid red !important;
+}
+
 .form-field ul {
   padding-left: 1.5rem;
   margin-top: .5rem;
@@ -137,12 +141,4 @@ button i {
 
 button#eye-fill-btn {
   /* display: none; */
-}
-
-.error {
-  border-color: red;
-}
-
-.success {
-  border-color: green;
 }
