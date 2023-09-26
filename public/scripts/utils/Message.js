@@ -1,14 +1,42 @@
 class Message {
-    constructor(element, message = '') {
-        this.message = message;
-        this.element = element;
+
+  setMessage( { element = null, isValid = true, messages = null } ) {
+  
+    if (element === null) {
+      return;
     }
 
-    get elementParent() {
-        return this.element.parentElement;
-    }
+    const formField = element.parentElement;
+    const errorField = formField.querySelector('.error');
+      
+    // formField.classList.toggle('error', !isValid);
+    // formField.classList.toggle('success', isValid);
+
+    if (messages === null) {
+
+      errorField.innerText = '';
+      return;
     
-    displayParent() {
-        console.log('displayParent', this.elementParent);
     }
+
+    if (typeof messages === 'object') {
+
+      errorField.innerText = '';
+
+      for (const message of messages) {
+      
+        const li = this.createElement('li', message);
+        errorField.appendChild(li);
+      
+      }
+    }
+  }
+}
+
+createElement(element) {
+    
+  let element = document.createElement(tagName);
+  element.innerText = message;
+
+  return element;
 }
