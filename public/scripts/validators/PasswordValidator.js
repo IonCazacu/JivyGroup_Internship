@@ -1,4 +1,4 @@
-class PasswordValidator {
+export default class PasswordValidator {
 
   /*
     ^: Start of the string.
@@ -66,7 +66,7 @@ class PasswordValidator {
 }
 
 
-class ConfirmPasswordValidator extends PasswordValidator {
+export class ConfirmPasswordValidator extends PasswordValidator {
   constructor(password, confirmPassword = null) {
     
     super(password);

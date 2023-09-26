@@ -1,3 +1,9 @@
+import UsernameValidator from '../validators/UsernameValidator.js';
+import EmailValidator from '../validators/EmailValidator.js';
+import PasswordValidator from '../validators/PasswordValidator.js';
+import ConfirmPasswordValidator from '../validators/PasswordValidator.js';
+
+
 class RegistrationForm {
   constructor() {
     this.registrationForm = document.getElementById('form');
@@ -117,3 +123,8 @@ class RegistrationForm {
     return element;
   }
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const registrationForm = new RegistrationForm();
+});

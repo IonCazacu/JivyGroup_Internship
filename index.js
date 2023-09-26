@@ -6,7 +6,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  res.sendFile(`${ __dirname }/public/registration-form.html`)
+  res.sendFile(`${ __dirname }/views/registration-form.html`)
 })
 
 app.listen(3333, () => {

@@ -1,4 +1,4 @@
-class UsernameValidator {
+export default class UsernameValidator {
 
   /*
     /^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$/

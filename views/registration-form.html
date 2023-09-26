@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="./styles/main.css" />
-  <script type="text/javascript" src="./scripts/validators/UsernameValidator.js"></script>
-  <script type="text/javascript" src="./scripts/validators/EmailValidator.js"></script>
-  <script type="text/javascript" src="./scripts/validators/PasswordValidator.js"></script>
-  <script type="text/javascript" src="./scripts/forms/RegistrationForm.js"></script>
-  <script type="text/javascript" src="./scripts/utils/Message.js"></script>
+  <script type="module" src="./scripts/forms/RegistrationForm.js"></script>
   <title>Registration Form</title>
 </head>
 <body>
@@ -78,10 +74,5 @@
   <footer>
     Footer
   </footer>
-  <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-      const registrationForm = new RegistrationForm();
-    });
-  </script>
 </body>
 </html>
