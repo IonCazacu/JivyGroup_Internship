@@ -60,10 +60,7 @@ class RegistrationForm {
         password: this.password.value.trim()
       };
 
-      console.log('form is ok');
-
-      // register an API
-      fetch('http://localhost:8080/users', {
+      fetch('http://localhost:8080/api/users', {
       
         method: 'POST',
       

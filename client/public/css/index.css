@@ -1,4 +1,4 @@
-@import 'base';
+@import url("base.css");
 
 header {
   
@@ -86,7 +86,7 @@ main {
 }
 
 .form-field input.error {
-  border: 1px solid red !important;
+  border:1px solid red !important;
 }
 
 .form-field ul {
