@@ -10,6 +10,6 @@ package-lock.json
 
 .vscode/
 
-migrations/
-seeders/
-models/index.js
+/server2/bin/
+
+/server2/obj/
