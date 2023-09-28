@@ -1,3 +1,5 @@
 # JivyGroup_Internship
 
-To run application run `npm start` or `npx nodemon`
+To run server run `npm start` or `npx nodemon`
+
+To run server2 run `dotnet run`
