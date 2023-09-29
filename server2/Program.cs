@@ -1,32 +1,17 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using UserApi.Data;
+using server2.Startup;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace server2.Program
 {
-    builder.Services.AddControllers();
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    public class ProgramClass
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => {
+                webBuilder.UseStartup<StartupClass>();
+            });
+    }
 }
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=Database.db";
-{
-    builder.Services.AddSqlite<UserContext>(connectionString);
-}
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
