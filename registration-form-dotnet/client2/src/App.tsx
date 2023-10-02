@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from './components/Navbar/Navbar';
 import HomeView from './views/HomeView';
 import SignupView from './views/SignupView';
+import UsersView from './views/UsersView';
 
 import './App.scss';
 
@@ -52,6 +53,7 @@ class App extends React.Component<{}, { previousValue: null, value: string }> {
           <Navbar></Navbar>
           <Routes>
             <Route path="/signup" element={ <SignupView></SignupView> }></Route>
+            <Route path="/users" element={ <UsersView></UsersView> }></Route>
             <Route path="/" element={ <HomeView></HomeView> }></Route>
           </Routes>
         </div>

@@ -11,7 +11,7 @@ using server2.Services.UserServices.Data;
 namespace server2.Database.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20230930133729_InitialCreate")]
+    [Migration("20231002103833_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,6 +26,9 @@ namespace server2.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ConfirmPassword")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -36,6 +39,7 @@ namespace server2.Database.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("Uuid")

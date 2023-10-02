@@ -63,7 +63,7 @@ namespace server2.Services.UserServices.Controllers
         {
             try
             {
-                if (user == null)
+                if (user == null || !ModelState.IsValid)
                 {
                     return BadRequest();
                 }

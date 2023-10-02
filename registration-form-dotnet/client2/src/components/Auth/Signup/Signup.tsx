@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormField from '../../../interfaces/FormField';
 import FormData from '../../../interfaces/FormData';
+import FormError from '../../../interfaces/FormError';
 
 import './Signup.scss';
 
@@ -14,23 +15,29 @@ interface State {
 // Interface for form component
 interface FormProps {
   fields: FormField[];
+  errors: any;
   onSubmit: (FormData: FormData) => void;
 };
 
-const Signup: React.FC<FormProps> = ({ fields, onSubmit }) => {
+const Signup: React.FC<FormProps> = ({ fields, errors, onSubmit }) => {
+
   const [formState, setFormState] = useState<State>({ formState: {} });
 
-  const handleBlur = ($event: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = $event.target;
-    setFormState(prevState => ({
-      formState: {
-        ...prevState.formState,
-        [name]: value,
-      },
-    }));
+  useEffect(() => {
+    console.log('changed', errors);
+  }, [errors]);
 
-    console.log('formState', formState);
-  };
+  // const handleBlur = ($event: React.FocusEvent<HTMLInputElement>) => {
+  //   const { name, value } = $event.target;
+  //   setFormState(prevState => ({
+  //     formState: {
+  //       ...prevState.formState,
+  //       [name]: value,
+  //     },
+  //   }));
+
+  //   console.log('formState', formState);
+  // };
 
   const handleChange = ($event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = $event.target;
@@ -41,7 +48,7 @@ const Signup: React.FC<FormProps> = ({ fields, onSubmit }) => {
       },
     }));
   };
-
+  
   const handleSubmit = ($event: React.FormEvent<HTMLFormElement>) => {
     $event.preventDefault();
     onSubmit(formState.formState);
@@ -57,10 +64,12 @@ const Signup: React.FC<FormProps> = ({ fields, onSubmit }) => {
             type={ field.type }
             id={ field.name }
             name={ field.name }
+            data-validation={ field.dataValidation }
             value={ formState.formState[field.name] || '' }
-            onChange={ handleChange }
-            onBlur={ handleBlur } />
-          <ul className="error"></ul>
+            onChange={ handleChange } />
+          { errors !== null && 
+            <ul className="error">{ errors.errors[field.dataValidation] }</ul>
+          }
         </div>
       ))}
       <button type="submit" id="submit">Submit</button>

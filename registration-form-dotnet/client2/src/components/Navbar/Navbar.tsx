@@ -48,6 +48,11 @@ class Navbar extends Component {
                   to="/signup">
                   Sign Up
                 </Link>
+                <Link
+                  className="nav-link"
+                  to="/users">
+                  Get Users
+                </Link>
               </li>
               <li className="nav-item dropdown">
                 <button

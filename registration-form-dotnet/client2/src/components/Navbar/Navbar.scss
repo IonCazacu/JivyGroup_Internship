@@ -2,7 +2,7 @@
   padding: 12px 0;
   
   background-color: rgb(18, 18, 18);
-  transition: .5s ease all;
+  // transition: .5s ease all;
   color: #fff;
   
   .container {
@@ -53,7 +53,7 @@
         img {
           height: 32px;
           width: 32px;
-          transition: .5s ease all;
+          // transition: .5s ease all;
         }
       }
     }
@@ -87,9 +87,9 @@
               -moz-transform: rotate(0deg);
               -webkit-transform: rotate(0deg);
               -ms-transform: rotate(0deg);
-              transition: .15s ease all;
-              -moz-transition: .15s ease all;
-              -webkit-transition: .15s ease all;
+              // transition: .15s ease all;
+              // -moz-transition: .15s ease all;
+              // -webkit-transition: .15s ease all;
               border-radius: .25rem;
             }
           }

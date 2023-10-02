@@ -1,34 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Signup from '../components/Auth/Signup/Signup';
-import FormField from '../interfaces/FormField';
 import FormData from '../interfaces/FormData';
+import FormField from '../interfaces/FormField';
+// import FormError from '../interfaces/FormError';
 
-class SignupView extends React.Component {
+const SignupView: React.FC = () => {
 
-  formFields: FormField[];
+  const formFields: FormField[] = [
+    { label: 'Username', type: 'text', name: 'username', dataValidation: 'Username' },
+    { label: 'Email', type: 'text', name: 'email', dataValidation: 'Email' },
+    { label: 'Password', type: 'password', name: 'password', dataValidation: 'Password' },
+    { label: 'Confirm Password', type: 'password', name: 'confirmPassword', dataValidation: 'ConfirmPassword' }
+  ];
+  
+  const [formErrors, setFormErrors] = useState({
+    type: '',
+    title: '',
+    status: 0,
+    traceId: '',
+    errors: []
+  });
 
-  constructor(props: any) {
-    super(props);
+  const onSubmit = (formData: FormData) => {
     
-    this.formFields = [
-      { label: 'Username', type: 'text', name: 'username' },
-      { label: 'Email', type: 'email', name: 'email' },
-      { label: 'Password', type: 'password', name: 'password' },
-      { label: 'Confirm Password', type: 'password', name: 'confirmPassword' },
-    ];
-  }
-
-  onSubmit = (formData: FormData) => {
-
     let count = 0;
     
-    for (const field of this.formFields) {
+    for (const field of formFields) {
       if (field.name in formData) {
         count++;
       }
     }
 
-    if (count === this.formFields.length) {
+    if (count === formFields.length) {
+      
       fetch('http://localhost:5229/api/user', {
         
         method: 'POST',
@@ -43,14 +47,16 @@ class SignupView extends React.Component {
       
       .then((response) => {
       
-        return response.json();
+        return response.text();
       
       })
 
       .then((data) => {
 
-        console.log('data', data.message);
-
+        const response = JSON.parse(data);
+        setFormErrors(response);
+        
+        console.log('SignupView', formErrors);
       })
       
       .catch((error) => {
@@ -65,11 +71,9 @@ class SignupView extends React.Component {
   
   }
 
-  render(): React.ReactNode {
-    return (
-      <Signup fields={ this.formFields } onSubmit={ this.onSubmit }></Signup>
-      )
-  }
+  return (
+    <Signup fields={ formFields } errors={ formErrors } onSubmit={ onSubmit }></Signup>
+    )
 }
 
 export default SignupView;
