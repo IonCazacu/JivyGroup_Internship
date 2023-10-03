@@ -1,35 +1,54 @@
-function Users() {
+import { useEffect, useState } from "react";
+import Users from "../components/Users/Users";
 
-  fetch('http://localhost:5229/api/user', {
+interface UserData {
+  id: number;
+  username: string;
+  email: string;
+}
+
+const UsersView = () => {
+
+  const [usersState, setUsersState] = useState<UserData[]>([]);
+
+  useEffect(() => {
+  
+    const getUsers = async () => {
     
-    method: 'GET',
+      try {
+        
+        const response = await fetch('http://localhost:5229/api/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+                
+        if (response) {
+          
+          const data = await response.json();
+          setUsersState(prevState => [
+            ...prevState,
+            data
+          ]);
+
+        }
+
+      } catch (error) {
     
-    headers: {
-      'Content-Type': 'application/json'
+        console.log(error);
+    
+      }
+  
     }
-  })
-  .then((response) => {
-    return response.json();
-  })
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((error) => {
-    console.log(error);
-  })
+
+    getUsers();
+  
+  }, []);
 
   return (
-    <table className="container">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>UUID</th>
-          <th>Username</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-    </table>
+    <Users users={ usersState }></Users>
   )
 }
 
-export default Users;
+export default UsersView;

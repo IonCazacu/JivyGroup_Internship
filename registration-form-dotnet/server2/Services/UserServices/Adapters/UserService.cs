@@ -14,9 +14,10 @@ namespace server2.Services.UserServices.Adapters
             this.userContext = userContext;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
-        {
-            return await userContext.Users.ToListAsync();
+        public async Task < IEnumerable < User >> GetUsers() {
+            return await userContext.Users.Select(u => new User {
+                Id = u.Id, Username = u.Username, Email = u.Email
+            }).ToListAsync();
         }
 
         public async Task<User?> GetUser(int userId)
