@@ -1,78 +1,84 @@
 import React, { useState } from 'react';
-import Signup from '../components/Auth/Signup/Signup';
+import Auth from '../components/User/Auth/Auth';
 import FormData from '../interfaces/FormData';
+import FormError from '../interfaces/FormError';
 import FormField from '../interfaces/FormField';
-// import FormError from '../interfaces/FormError';
 
 const SignupView: React.FC = () => {
 
-  const formFields: FormField[] = [
-    { label: 'Username', type: 'text', name: 'username', dataValidation: 'Username' },
-    { label: 'Email', type: 'text', name: 'email', dataValidation: 'Email' },
-    { label: 'Password', type: 'password', name: 'password', dataValidation: 'Password' },
-    { label: 'Confirm Password', type: 'password', name: 'confirmPassword', dataValidation: 'ConfirmPassword' }
-  ];
-  
-  const [formErrors, setFormErrors] = useState({
-    type: '',
-    title: '',
-    status: 0,
-    traceId: '',
-    errors: []
+  const [formErrors, setFormErrors] = useState<FormError>({
+    formError: {
+      type: '',
+      title: '',
+      status: 0,
+      traceId: '',
+      errors: {}
+    }
   });
 
-  const onSubmit = (formData: FormData) => {
-    
-    let count = 0;
-    
-    for (const field of formFields) {
-      if (field.name in formData) {
-        count++;
-      }
+  const formFields: FormField[] = [
+    {
+      label: 'Username',
+      type: 'text',
+      name: 'username',
+      dataValidation: 'Username'
+    },
+    {
+      label: 'Email',
+      type: 'text',
+      name: 'email',
+      dataValidation: 'Email'
+    },
+    {
+      label: 'Password',
+      type: 'password',
+      name: 'password',
+      dataValidation: 'Password'
+    },
+    {
+      label: 'Confirm Password',
+      type: 'password',
+      name: 'confirmPassword',
+      dataValidation: 'ConfirmPassword'
     }
-
-    if (count === formFields.length) {
-      
-      fetch('http://localhost:5229/api/user', {
-        
-        method: 'POST',
-        
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        
-        body: JSON.stringify(formData)
-      
-      })
-      
-      .then((response) => {
-      
-        return response.text();
-      
-      })
-
-      .then((data) => {
-
-        const response = JSON.parse(data);
-        setFormErrors(response);
-        
-        console.log('SignupView', formErrors);
-      })
-      
-      .catch((error) => {
-      
-        console.error('error', error.message);
-      
-      });
-
-    }
-    
-    // console.log('Form data : ', formData['confirmPassword']);
+  ];
   
+  const onSubmit = async (formData: FormData) => {
+    
+    const count = formFields.filter(field => field.name in formData).length;
+
+    try {
+
+      if (count === formFields.length) {
+      
+        const response = await fetch('http://localhost:5229/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        setFormErrors({ formError: data });
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
   }
 
   return (
-    <Signup fields={ formFields } errors={ formErrors } onSubmit={ onSubmit }></Signup>
+    <Auth
+      header="Sign Up"
+      fields={ formFields }
+      errors={ formErrors }
+      onSubmit={ onSubmit }
+    ></Auth>
     )
 }
 
