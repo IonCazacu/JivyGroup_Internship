@@ -33,7 +33,7 @@ const Users: React.FC<any> = ( users: any ) => {
             <tbody>
               { Object.keys(users.users[0]).map((user, key) => (
                 <tr key={ key }>
-                  <th scope="row">{ users.users[0][user].id }</th>
+                  <th scope="row">{ key + 1 }</th>
                   <td>{ users.users[0][user].username }</td>
                   <td>{ users.users[0][user].email }</td>
                 </tr>

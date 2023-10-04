@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace server2.Services.UserServices.Models
+namespace server2.Services.UserServices.Model
 {
     public class User
     {
@@ -27,6 +27,18 @@ namespace server2.Services.UserServices.Models
 
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string? ConfirmPassword { get; set; }
+    }
+
+    public class ApiResponse
+    {
+        public int StatusCode { get; set; }
+        public string Message { get; set; }
+
+        public ApiResponse(int statusCode, string message)
+        {
+            StatusCode = statusCode;
+            Message = message;
+        }
     }
 
     public class IntegrityException : Exception
