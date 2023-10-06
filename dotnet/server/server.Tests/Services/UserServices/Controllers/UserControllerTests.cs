@@ -12,7 +12,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task LoginTest_ValidCredentials_ReturnsUser()
+        public async Task LoginUserWithValidCredentials_ReturnsUser()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -58,7 +58,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginTest_NullCredentials_ReturnsBadRequest()
+        public async Task LoginUserWithNullCredentials_ReturnsBadRequest()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -71,7 +71,8 @@ public class UserControllerTests
                     authModel.Username!,
                     authModel.Password!
                     )
-                );
+                )
+                .ReturnsAsync(null as User); ;
 
             var controller = new Services.UserServices.Controllers.UserController(_userServiceMock.Object);
             var result = await controller.Login(authModel);
@@ -82,7 +83,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginTest_WrongCredentials_ReturnsBadRequestObjectResult()
+        public async Task LoginUserWithWrongCredentials_ReturnsNotFound()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -95,7 +96,8 @@ public class UserControllerTests
                     authModel.Username,
                     authModel.Password
                     )
-                );
+                )
+                .ReturnsAsync(null as User);
 
             var controller = new Services.UserServices.Controllers.UserController(_userServiceMock.Object);
             var result = await controller.Login(authModel);
@@ -106,7 +108,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginTest_ThrowsException()
+        public async Task LoginUser_ThrowsException()
         {
             _userServiceMock
                 .Setup(service => service.Login(
@@ -135,7 +137,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task GetUsersTest_ThrowsException()
+        public async Task GetAllUsers_ThrowsException()
         {
             _userServiceMock
                 .Setup(service => service.GetUsers())
@@ -155,7 +157,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task GetUserTest_ValidId_ReturnsUser()
+        public async Task GetUserByIdWithValidId_ReturnsUser()
         {
             int userId = 123;
 
@@ -187,6 +189,41 @@ public class UserControllerTests
 
             Assert.NotNull(returnedUser);
             Assert.Equal(user, returnedUser);
+        }
+
+        [Fact]
+        public async Task GetUserByIdWithInvalidId_ReturnsNotFound()
+        {
+            int userId = -1;
+
+            _userServiceMock
+                .Setup(service => service.GetUser(userId))
+                .ReturnsAsync(null as User);
+            
+            var controller = new Services.UserServices.Controllers.UserController(_userServiceMock.Object);
+
+            var result = await controller.Get(userId);
+
+            var okResult = Assert.IsType<ActionResult<User>>(result);
+            var statusCode = Assert.IsType<NotFoundObjectResult>(okResult.Result);
+            Assert.Equal(404, statusCode.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetUserById_ReturnsException()
+        {
+            int userId = 1233;
+
+            _userServiceMock
+                .Setup(service => service.GetUser(userId))
+                .ThrowsAsync(new Exception("Unknown exception"));
+
+            var controller = new Services.UserServices.Controllers.UserController(_userServiceMock.Object);
+            var result = await controller.Get(userId);
+
+            var userActionResult = Assert.IsType<ActionResult<User>>(result);
+            var statusCode = Assert.IsType<StatusCodeResult>(userActionResult.Result);
+            Assert.Equal(500, statusCode.StatusCode);
         }
     }
 }
