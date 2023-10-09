@@ -133,18 +133,6 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task GetAllUsersReturnsNotFoundResult()
-        {
-            
-        }
-
-        [Fact]
-        public async Task GetAllUsersReturnsOkObjectResult()
-        {
-
-        }
-
-        [Fact]
         public async Task GetAllUsersReturnsException()
         {
             _userServiceMock
