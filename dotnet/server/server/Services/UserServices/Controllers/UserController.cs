@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using server.Services.UserServices.Model;
 using server.Services.UserServices.Ports;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace server.Services.UserServices.Controllers
 {
@@ -29,10 +30,7 @@ namespace server.Services.UserServices.Controllers
                     return new BadRequestObjectResult("Username and password is required");
                 }
 
-                User? userToAuthenticate = await _userService.Login(
-                    model.Username,
-                    model.Password
-                    );
+                User? userToAuthenticate = await _userService.Login(model.Username, model.Password);
 
                 if (userToAuthenticate == null)
                 {
@@ -41,9 +39,13 @@ namespace server.Services.UserServices.Controllers
 
                 return new OkObjectResult(userToAuthenticate);
             }
-            catch
+            catch (Exception ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    ex.Message
+                });
             }
         }
 
@@ -61,9 +63,13 @@ namespace server.Services.UserServices.Controllers
 
                 return new OkObjectResult(users);
             }
-            catch
+            catch (Exception ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    ex.Message
+                });
             }
         }
 
@@ -81,9 +87,13 @@ namespace server.Services.UserServices.Controllers
 
                 return new OkObjectResult(userToGet);
             }
-            catch
+            catch (Exception ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    ex.Message
+                });
             }
         }
 
@@ -91,29 +101,26 @@ namespace server.Services.UserServices.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post([FromBody] User user)
         {
+            if (user == null || !ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        Status = StatusCodes.Status400BadRequest,
+                        Message = "The submitted form was invalid."
+                    }
+                );
+            }
+
             try
             {
-                // if (user == null || !ModelState.IsValid)
-                // {
-                //     return BadRequest(
-                //         new
-                //         {
-                //             Status = StatusCodes.Status400BadRequest,
-                //             Message = "The submitted form was invalid."
-                //         }
-                //     );
-                // }
 
                 User? userToAdd = await _userService.AddUser(user);
 
                 return CreatedAtAction(
                     nameof(Get),
-                    new { Id = user.Id },
-                    new
-                    {
-                        userToAdd,
-                        Message = "Your account has been successfully created."
-                    }
+                    new { user.Id },
+                    userToAdd
                 );
             }
             catch (ArgumentNullException ex)
@@ -121,7 +128,7 @@ namespace server.Services.UserServices.Controllers
                 return new BadRequestObjectResult(new
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Message = ex.Message
+                    ex.Message
                 });
             }
             catch (IntegrityException ex)
@@ -129,7 +136,7 @@ namespace server.Services.UserServices.Controllers
                 return new ConflictObjectResult(new
                 {
                     Status = StatusCodes.Status409Conflict,
-                    Message = ex.Message
+                    ex.Message
                 });
             }
             catch (Exception ex)
@@ -137,13 +144,13 @@ namespace server.Services.UserServices.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    Message = ex.Message
+                    ex.Message
                 });
             }
         }
 
         [HttpPut("{userId:int}")]
-        public async Task<ActionResult<User>> Put(int userId, User user)
+        public async Task<ActionResult<User>> Put(int userId, [FromBody] User user)
         {
             try
             {
@@ -161,9 +168,13 @@ namespace server.Services.UserServices.Controllers
 
                 return userToUpdate;
             }
-            catch
+            catch (Exception ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    ex.Message
+                });
             }
         }
 
@@ -181,9 +192,13 @@ namespace server.Services.UserServices.Controllers
 
                 return userToDelete;
             }
-            catch
+            catch (Exception ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    ex.Message
+                });
             }
         }
     }

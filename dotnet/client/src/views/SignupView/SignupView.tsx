@@ -110,14 +110,15 @@ const SignupView: React.FC = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        // body: JSON.stringify(formData)
-        body: JSON.stringify({})
+        body: JSON.stringify(formData)
+        // body: JSON.stringify({})
       });
-      
+
       const data = await response.json();
       console.log(data);
 
       if (!response.ok) {
+
         setFormState(prevState => ({
     
           ...prevState,
@@ -131,8 +132,15 @@ const SignupView: React.FC = () => {
     } catch (error) {
       
       if (error instanceof TypeError) {
+
+        const msg = `A network error occurred: ${ error.message }`;
+
+        setFormState(prevState => ({
+    
+          ...prevState,
+          errorMessage: msg
       
-        console.log("A network error occurred:", error);
+        }));
       
       } else {
       

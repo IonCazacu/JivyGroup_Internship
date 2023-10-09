@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Services.UserServices.Data;
 using server.Services.UserServices.Model;
@@ -36,12 +37,14 @@ namespace server.Services.UserServices.Adapters
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-            return await userContext.Users.Select(
-                u => new User {
+            return await userContext.Users
+                .Select(u => new User
+                {
                     Id = u.Id,
                     Username = u.Username,
                     Email = u.Email
-                }).ToListAsync();
+                })
+                .ToListAsync();
         }
 
         public async Task<User?> GetUser(int userId)
@@ -65,13 +68,13 @@ namespace server.Services.UserServices.Adapters
 
         public async Task<User?> AddUser(User user)
         {
-            if (user == null)
+            /*if (user == null)
             {
                 throw new ArgumentNullException(
                     nameof(user),
                     "No data was provided for registration request"
                 );
-            }
+            }*/
 
             User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
 
