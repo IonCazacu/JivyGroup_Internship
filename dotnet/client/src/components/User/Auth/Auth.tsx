@@ -3,7 +3,7 @@ import FormData from '../../../interfaces/FormData';
 import FormError from '../../../interfaces/FormError';
 import FormField from '../../../interfaces/FormField';
 
-import './Auth.scss';
+// import './Auth.scss';
 
 // Interface for form state
 interface State {
@@ -20,7 +20,7 @@ interface FormProps {
   onSubmit: (FormData: FormData) => void;
 };
 
-const Signup: React.FC<FormProps> = ({ header, fields, errors, onSubmit }) => {
+const Auth: React.FC<FormProps> = ({ header, fields, errors, onSubmit }) => {
 
   const [formState, setFormState] = useState<State>({ formState: {} });
 
@@ -42,9 +42,13 @@ const Signup: React.FC<FormProps> = ({ header, fields, errors, onSubmit }) => {
     onSubmit(formState.formState);
   };
 
+  console.log('object : ', errors);
+
   return (
+    // <section></section>
     <form className="container" onSubmit={ handleSubmit }>
       <div className='container__box-shadow'>
+        <p>Server Error</p>
         <h2>{ header }</h2>
         { fields.map((field, key) => (
           <div className="form-group" key={ key }>
@@ -77,4 +81,4 @@ const Signup: React.FC<FormProps> = ({ header, fields, errors, onSubmit }) => {
   )
 }
 
-export default Signup;
+export default Auth;

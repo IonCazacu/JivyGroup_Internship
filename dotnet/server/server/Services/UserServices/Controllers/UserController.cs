@@ -53,7 +53,7 @@ namespace server.Services.UserServices.Controllers
             try
             {
                 IEnumerable<User> users = await _userService.GetUsers();
-            
+
                 if (users == null || !users.Any())
                 {
                     return new NotFoundResult();
@@ -76,9 +76,9 @@ namespace server.Services.UserServices.Controllers
 
                 if (userToGet == null)
                 {
-                    return new NotFoundObjectResult($"User with Id { userId } was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found");
                 }
-    
+
                 return new OkObjectResult(userToGet);
             }
             catch
@@ -87,23 +87,58 @@ namespace server.Services.UserServices.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<User>> Post(User user)
+        public async Task<ActionResult<User>> Post([FromBody] User user)
         {
             try
             {
-                if (user == null || !ModelState.IsValid)
-                {
-                    return new BadRequestResult();
-                }
+                // if (user == null || !ModelState.IsValid)
+                // {
+                //     return BadRequest(
+                //         new
+                //         {
+                //             Status = StatusCodes.Status400BadRequest,
+                //             Message = "The submitted form was invalid."
+                //         }
+                //     );
+                // }
 
                 User? userToAdd = await _userService.AddUser(user);
-                
-                return CreatedAtAction(nameof (Get), new { id = user.Id }, userToAdd);
+
+                return CreatedAtAction(
+                    nameof(Get),
+                    new { Id = user.Id },
+                    new
+                    {
+                        userToAdd,
+                        Message = "Your account has been successfully created."
+                    }
+                );
             }
-            catch
+            catch (ArgumentNullException ex)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return new BadRequestObjectResult(new
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+            }
+            catch (IntegrityException ex)
+            {
+                return new ConflictObjectResult(new
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message
+                });
             }
         }
 
@@ -116,14 +151,14 @@ namespace server.Services.UserServices.Controllers
                 {
                     return new BadRequestResult();
                 }
-                
+
                 User? userToUpdate = await _userService.UpdateUser(userId, user);
 
                 if (userToUpdate == null)
                 {
-                    return new NotFoundObjectResult($"User with Id { userId } was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found");
                 }
-                
+
                 return userToUpdate;
             }
             catch
@@ -141,9 +176,9 @@ namespace server.Services.UserServices.Controllers
 
                 if (userToDelete == null)
                 {
-                    return new NotFoundObjectResult($"User with Id { userId } was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found");
                 }
-                
+
                 return userToDelete;
             }
             catch

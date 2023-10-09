@@ -12,7 +12,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task LoginUserWithValidCredentials_ReturnsUser()
+        public async Task LoginUserWithValidCredentialsReturnsUser()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -58,7 +58,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginUserWithNullCredentials_ReturnsBadRequest()
+        public async Task LoginUserWithNullCredentialsReturnsBadRequest()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -83,7 +83,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginUserWithWrongCredentials_ReturnsNotFound()
+        public async Task LoginUserWithWrongCredentialsReturnsNotFound()
         {
             AuthModel authModel = new AuthModel()
             {
@@ -108,7 +108,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task LoginUser_ThrowsException()
+        public async Task LoginUserThrowsException()
         {
             _userServiceMock
                 .Setup(service => service.Login(
@@ -137,7 +137,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task GetAllUsers_ThrowsException()
+        public async Task GetAllUsersThrowsException()
         {
             _userServiceMock
                 .Setup(service => service.GetUsers())
@@ -157,7 +157,7 @@ public class UserControllerTests
         private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
 
         [Fact]
-        public async Task GetUserByIdWithValidId_ReturnsUser()
+        public async Task GetUserByIdWithValidIdReturnsUser()
         {
             int userId = 123;
 
@@ -192,7 +192,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task GetUserByIdWithInvalidId_ReturnsNotFound()
+        public async Task GetUserByIdWithInvalidIdReturnsNotFound()
         {
             int userId = -1;
 
@@ -210,7 +210,7 @@ public class UserControllerTests
         }
 
         [Fact]
-        public async Task GetUserById_ReturnsException()
+        public async Task GetUserByIdReturnsException()
         {
             int userId = 1233;
 

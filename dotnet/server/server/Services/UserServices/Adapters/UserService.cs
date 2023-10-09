@@ -65,29 +65,25 @@ namespace server.Services.UserServices.Adapters
 
         public async Task<User?> AddUser(User user)
         {
-            try
+            if (user == null)
             {
-                if (user == null)
-                {
-                    throw new ArgumentNullException(nameof (user), "User object cannot be null");
-                }
-
-                User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
-
-                if (userToAdd != null)
-                {
-                    throw new IntegrityException($"User with email { user.Email } is already registered");
-                }
-
-                userContext.Users.Add(user);
-                await userContext.SaveChangesAsync();
-                
-                return user;
+                throw new ArgumentNullException(
+                    nameof(user),
+                    "No data was provided for registration request"
+                );
             }
-            catch (Exception e)
+
+            User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
+
+            if (userToAdd != null)
             {
-                throw new Exception($"{ e.Message }");
+                throw new IntegrityException("That email is already taken");
             }
+
+            userContext.Users.Add(user);
+            await userContext.SaveChangesAsync();
+            
+            return user;
         }
 
         public async Task<User?> UpdateUser(int userId, User user)
