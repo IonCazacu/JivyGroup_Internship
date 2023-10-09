@@ -84,19 +84,13 @@ const SignupView: React.FC = () => {
     const validEmail = EMAIL_REGEX.test(formState.email);
     const validPassword = PASSWORD_REGEX.test(formState.password);
 
-    // if (!validUsername || !validEmail || !validPassword) {
-      
-    //   setFormState(prevState => ({
-      
-    //     ...prevState,
-    //     errorMessage: ''
-      
-    //   }));
-
-    //   return;
-    // }
-
     try {
+
+      // if (!validUsername || !validEmail || !validPassword) {
+      
+      //   throw new Error ('Please fill out all fields.');
+        
+      // }
       
       const formData = {
         username: formState.username,
@@ -105,7 +99,7 @@ const SignupView: React.FC = () => {
         confirmPassword: formState.confirmPassword
       };
 
-      const response = await fetch('http://localhost:5263/api/use', {
+      const response = await fetch('http://localhost:5263/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -119,14 +113,10 @@ const SignupView: React.FC = () => {
 
       if (!response.ok) {
 
-        setFormState(prevState => ({
-    
-          ...prevState,
-          errorMessage: data?.message
-      
-        }));
+        const msg = `HTTP error! status: ${ response.status }, message: ${ data.message }`;
+        
+        throw new Error(msg);
 
-        throw new Error(`HTTP error! status: ${ response.status }`);
       }
       
     } catch (error) {

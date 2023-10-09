@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using server.Services.UserServices.Model;
 using server.Services.UserServices.Ports;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace server.Services.UserServices.Controllers
 {
@@ -27,24 +26,24 @@ namespace server.Services.UserServices.Controllers
             {
                 if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
                 {
-                    return new BadRequestObjectResult("Username and password is required");
+                    return new BadRequestObjectResult("Username and password is required.");
                 }
 
                 User? userToAuthenticate = await _userService.Login(model.Username, model.Password);
 
                 if (userToAuthenticate == null)
                 {
-                    return new NotFoundObjectResult("Username or password is incorrect");
+                    return new NotFoundObjectResult("Username or password is incorrect.");
                 }
 
                 return new OkObjectResult(userToAuthenticate);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }
@@ -58,17 +57,17 @@ namespace server.Services.UserServices.Controllers
 
                 if (users == null || !users.Any())
                 {
-                    return new NotFoundResult();
+                    return new NotFoundObjectResult("No users found.");
                 }
 
                 return new OkObjectResult(users);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }
@@ -82,17 +81,17 @@ namespace server.Services.UserServices.Controllers
 
                 if (userToGet == null)
                 {
-                    return new NotFoundObjectResult($"User with Id {userId} was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found.");
                 }
 
                 return new OkObjectResult(userToGet);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }
@@ -101,19 +100,16 @@ namespace server.Services.UserServices.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post([FromBody] User user)
         {
-            if (user == null || !ModelState.IsValid)
+            try
             {
-                return new BadRequestObjectResult(
-                    new
+                if (user == null || !ModelState.IsValid)
+                {
+                    return new BadRequestObjectResult(new
                     {
                         Status = StatusCodes.Status400BadRequest,
                         Message = "The submitted form was invalid."
-                    }
-                );
-            }
-
-            try
-            {
+                    });
+                }
 
                 User? userToAdd = await _userService.AddUser(user);
 
@@ -123,28 +119,20 @@ namespace server.Services.UserServices.Controllers
                     userToAdd
                 );
             }
-            catch (ArgumentNullException ex)
-            {
-                return new BadRequestObjectResult(new
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    ex.Message
-                });
-            }
-            catch (IntegrityException ex)
+            catch (IntegrityException e)
             {
                 return new ConflictObjectResult(new
                 {
                     Status = StatusCodes.Status409Conflict,
-                    ex.Message
+                    e.Message
                 });
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }
@@ -156,24 +144,24 @@ namespace server.Services.UserServices.Controllers
             {
                 if (user == null || userId != user.Id)
                 {
-                    return new BadRequestResult();
+                    return new BadRequestObjectResult("Invalid user or user ID.");
                 }
 
                 User? userToUpdate = await _userService.UpdateUser(userId, user);
 
                 if (userToUpdate == null)
                 {
-                    return new NotFoundObjectResult($"User with Id {userId} was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found.");
                 }
 
                 return userToUpdate;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }
@@ -187,17 +175,17 @@ namespace server.Services.UserServices.Controllers
 
                 if (userToDelete == null)
                 {
-                    return new NotFoundObjectResult($"User with Id {userId} was not found");
+                    return new NotFoundObjectResult($"User with Id {userId} was not found.");
                 }
 
                 return userToDelete;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Status = StatusCodes.Status500InternalServerError,
-                    ex.Message
+                    e.Message
                 });
             }
         }

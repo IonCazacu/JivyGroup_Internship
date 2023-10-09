@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Services.UserServices.Data;
 using server.Services.UserServices.Model;
@@ -31,7 +30,7 @@ namespace server.Services.UserServices.Adapters
             }
             catch (Exception e)
             {
-                throw new Exception($"{ e.Message }");
+                throw new Exception(e.Message);
             }
         }
 
@@ -62,31 +61,30 @@ namespace server.Services.UserServices.Adapters
             }
             catch (Exception e)
             {
-                throw new Exception($"{ e.Message }");
+                throw new Exception(e.Message);
             }
         }
 
         public async Task<User?> AddUser(User user)
         {
-            /*if (user == null)
+            try
             {
-                throw new ArgumentNullException(
-                    nameof(user),
-                    "No data was provided for registration request"
-                );
-            }*/
+                User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
 
-            User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
+                if (userToAdd != null)
+                {
+                    throw new IntegrityException("That email is already taken");
+                }
 
-            if (userToAdd != null)
-            {
-                throw new IntegrityException("That email is already taken");
+                userContext.Users.Add(user);
+                await userContext.SaveChangesAsync();
+                
+                return user;
             }
-
-            userContext.Users.Add(user);
-            await userContext.SaveChangesAsync();
-            
-            return user;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public async Task<User?> UpdateUser(int userId, User user)
@@ -107,7 +105,7 @@ namespace server.Services.UserServices.Adapters
             }
             catch (Exception e)
             {
-                throw new Exception($"{ e.Message }");
+                throw new Exception(e.Message);
             }
         }
 
@@ -129,7 +127,7 @@ namespace server.Services.UserServices.Adapters
             }
             catch (Exception e)
             {
-                throw new Exception($"{ e.Message }");
+                throw new Exception(e.Message);
             }
         }
     }

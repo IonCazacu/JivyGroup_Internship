@@ -9,28 +9,26 @@ namespace server.Services.UserServices.Model
 
         public Guid Uuid { get; set; } = Guid.NewGuid();
 
-        [Required(ErrorMessage = "Username is required")]
-        [MinLength(8, ErrorMessage = "Username require at least 8 characters")]
-        [MaxLength(20, ErrorMessage = "Username require at most 20 characters")]
+        [Required()]
+        [MinLength(8)]
+        [MaxLength(20)]
         [RegularExpression(
-            @"^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$",
-            ErrorMessage = "Username cannot contain consecutive unserscores or dots"
+            @"^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$"
         )]
         public string? Username { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [Required()]
+        [EmailAddress()]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
-        [MinLength(8, ErrorMessage = "At least 8 characters long")]
+        [Required()]
+        [MinLength(8)]
         [RegularExpression(
             @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,}$"
         )]
-        // , ErrorMessage="Password require at least 1 special character (!@#$%^&*()_+-=[]{}|:;'<>,.?/~)"
         public string? Password { get; set; }
 
-        [Compare("Password", ErrorMessage = "Must match the first password field.")]
+        [Compare("Password")]   
         public string? ConfirmPassword { get; set; }
     }
 
