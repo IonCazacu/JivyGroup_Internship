@@ -2,19 +2,19 @@ import React from "react";
 
 import "./Users.scss";
 
-// interface UserData {
-//   id: number;
-//   username: string;
-//   email: string;
-// }
+/*interface UserData {
+  id: number;
+  username: string;
+  email: string;
+}*/
 
-const Users: React.FC<any> = ( users: any ) => {
+const Users: React.FC<any> = (users: any) => {
+
+  // console.log('users', users.users[0]); // object
 
   // for (const user in users.users[0]) {
   //   console.log(users.users[0][user]);
   // }
-
-  // console.log('users', users.users[0]); // object
 
   return (
     <section className="container">
@@ -28,8 +28,9 @@ const Users: React.FC<any> = ( users: any ) => {
               <th scope="col">Email</th>
             </tr>
           </thead>
-          { users.users[0] &&
+          { users.users !== undefined &&
             users.users[0] !== null &&
+            users.users[0] &&
             <tbody>
               { Object.keys(users.users[0]).map((user, key) => (
                 <tr key={ key }>
@@ -46,4 +47,4 @@ const Users: React.FC<any> = ( users: any ) => {
   )
 }
 
-export default Users
+export default Users;

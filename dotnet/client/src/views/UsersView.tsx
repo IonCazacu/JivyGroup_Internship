@@ -12,20 +12,20 @@ const UsersView = () => {
   const [usersState, setUsersState] = useState<UserData[]>([]);
 
   useEffect(() => {
-  
+
     const getUsers = async () => {
-    
+
       try {
-        
+
         const response = await fetch('http://localhost:5229/api/user', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           }
         });
-                
+
         if (response) {
-          
+
           const data = await response.json();
           setUsersState(prevState => [
             ...prevState,
@@ -35,15 +35,15 @@ const UsersView = () => {
         }
 
       } catch (error) {
-    
+
         console.log(error);
-    
+
       }
-  
+
     }
 
     getUsers();
-  
+
   }, []);
 
   return (

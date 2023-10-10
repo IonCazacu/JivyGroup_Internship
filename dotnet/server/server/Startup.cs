@@ -59,7 +59,6 @@ namespace server.Startup
         {
             if (env.IsDevelopment())
             {
-
                 //app.UseDeveloperExceptionPage();
 
                 app.UseSwagger();

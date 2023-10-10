@@ -48,6 +48,7 @@ namespace server.Services.UserServices.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Get()
         {
