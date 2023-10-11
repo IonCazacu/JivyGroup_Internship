@@ -10,7 +10,7 @@ namespace server.Database.Configuration
         {
             builder.ToTable("Users");
             
-            for (int i = 1; i <= 100; i++)
+            for (int i = 1; i <= 1000; i++)
             {
                 builder.HasData
                 (

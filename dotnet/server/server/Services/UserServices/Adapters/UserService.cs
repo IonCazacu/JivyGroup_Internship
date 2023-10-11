@@ -33,20 +33,7 @@ namespace server.Services.UserServices.Adapters
                 throw new Exception(e.Message);
             }
         }
-
-        public async Task<IEnumerable<User>> GetUsers()
-        {
-            return await userContext.Users
-                .Select(u => new User
-                {
-                    Id = u.Id,
-                    Username = u.Username,
-                    Email = u.Email
-                })
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<User>> GetUsers(int cursor, int pageSize)
+        public async Task<(IEnumerable<User>, int)> GetUsers(int cursor, int limit)
         {
             IEnumerable<User> users = await userContext.Users
                 .Select(u => new User
@@ -56,19 +43,13 @@ namespace server.Services.UserServices.Adapters
                     Email = u.Email
                 })
                 .Where(u => u.Id >= cursor)
-                .Take(pageSize + 1)
+                .Take(limit + 1)
                 .OrderBy(u => u.Id)
                 .ToListAsync();
 
-            int nextCursor = users.Count() > pageSize ? users.Last().Id : -1;
+            int nextCursor = users.Count() > limit ? users.Last().Id : -1;
 
-            var result = new
-            {
-                Users = users.Take(pageSize),
-                NextCursor = nextCursor
-            };
-
-            return users;
+            return (users.Take(limit), nextCursor);
         }
 
         public async Task<User?> GetUser(int userId)
