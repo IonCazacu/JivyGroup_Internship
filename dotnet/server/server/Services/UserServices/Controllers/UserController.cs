@@ -50,11 +50,13 @@ namespace server.Services.UserServices.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
+        public async Task<ActionResult<IEnumerable<User>>> Get(
+            [FromQuery(Name = "cursor")] int cursor,
+            [FromQuery(Name = "pageSize")] int pageSize = 10)
         {
             try
             {
-                IEnumerable<User> users = await _userService.GetUsers();
+                IEnumerable<User> users = await _userService.GetUsers(cursor, pageSize);
 
                 if (users == null || !users.Any())
                 {
@@ -72,6 +74,31 @@ namespace server.Services.UserServices.Controllers
                 });
             }
         }
+
+        // [AllowAnonymous]
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<User>>> Get()
+        // {
+        //     try
+        //     {
+        //         IEnumerable<User> users = await _userService.GetUsers();
+
+        //         if (users == null || !users.Any())
+        //         {
+        //             return new NotFoundObjectResult("No users found.");
+        //         }
+
+        //         return new OkObjectResult(users);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         return StatusCode(StatusCodes.Status500InternalServerError, new
+        //         {
+        //             Status = StatusCodes.Status500InternalServerError,
+        //             e.Message
+        //         });
+        //     }
+        // }
 
         [HttpGet("{userId:int}")]
         public async Task<ActionResult<User>> Get(int userId)

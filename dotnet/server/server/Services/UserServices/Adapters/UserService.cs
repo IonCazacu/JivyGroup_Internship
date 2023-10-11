@@ -46,6 +46,31 @@ namespace server.Services.UserServices.Adapters
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<User>> GetUsers(int cursor, int pageSize)
+        {
+            IEnumerable<User> users = await userContext.Users
+                .Select(u => new User
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    Email = u.Email
+                })
+                .Where(u => u.Id >= cursor)
+                .Take(pageSize + 1)
+                .OrderBy(u => u.Id)
+                .ToListAsync();
+
+            int nextCursor = users.Count() > pageSize ? users.Last().Id : -1;
+
+            var result = new
+            {
+                Users = users.Take(pageSize),
+                NextCursor = nextCursor
+            };
+
+            return users;
+        }
+
         public async Task<User?> GetUser(int userId)
         {
             try

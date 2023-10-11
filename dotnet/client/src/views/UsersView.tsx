@@ -17,7 +17,7 @@ const UsersView = () => {
 
       try {
 
-        const response = await fetch('http://localhost:5229/api/user', {
+        const response = await fetch('http://localhost:5263/api/user', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
