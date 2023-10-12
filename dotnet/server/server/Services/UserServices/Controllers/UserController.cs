@@ -51,12 +51,12 @@ namespace server.Services.UserServices.Controllers
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Get(
-            [FromQuery(Name = "cursor")] string cursor = "0",
-            [FromQuery(Name = "limit")] string limit = "100")
+            [FromQuery(Name = "cursor")] int cursor = 0,
+            [FromQuery(Name = "limit")] int limit = 100)
         {
             try
             {
-                (IEnumerable<User> users, int nextCursor) = await _userService.GetUsers(int.Parse(cursor), int.Parse(limit));
+                (IEnumerable<User> users, int nextCursor) = await _userService.GetUsers(cursor, limit);
 
                 if (users == null || !users.Any())
                 {

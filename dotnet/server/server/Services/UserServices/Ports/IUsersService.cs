@@ -5,7 +5,7 @@ namespace server.Services.UserServices.Ports
     public interface IUserService
     {
         Task<User?> Login (string username, string password);
-        Task<(IEnumerable<User>, int)> GetUsers (int cursor, int pageSize);
+        Task<(IEnumerable<User>, int)> GetUsers (int cursor, int limit);
         Task<User?> GetUser (int userId);
         Task<User?> AddUser (User user);
         Task<User?> UpdateUser (int userId, User user);

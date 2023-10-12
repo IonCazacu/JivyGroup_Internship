@@ -1,141 +1,116 @@
-import React, { useEffect, useRef, useState } from "react";
-// import useUsers from "../hooks/useUsers";
-// import Users from "../components/Users/Users";
+import React from "react";
+import Users from "../components/Users/Users";
+import UserData from "../Ports/UserData";
 
 import '../components/Users/Users.scss';
 
-interface UserData {
-  id: number;
-  username: string;
-  email: string;
-}
-
 const UsersView = () => {
+  
   const [users, setUsers] = React.useState<UserData[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isError, setIsError] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<any>({});
   const [nextCursor, setNextCursor] = React.useState<number>(0);
+  const loadMoreRef = React.useRef<HTMLSpanElement>(null);
 
-  const controller = new AbortController();
-  const { signal } = controller;
-
-  const getUsers = async () => {
-
-    const queryParams = new URLSearchParams({
-      cursor: nextCursor.toString(),
-      limit: '100'
-    });
-
+  const getUsers = React.useCallback(async () => {
+    
+    const controller = new AbortController();
+    const { signal } = controller;
+    
     try {
-
-      const response = await fetch(
-        'http://localhost:5263/api/user' + '?' + queryParams, {
-        signal: signal,
-        method: 'GET',
+      
+      setIsLoading(true);
+      setIsError(false);
+      setError({});
+      
+      const queryParams = new URLSearchParams({
+        cursor: nextCursor.toString(),
+        limit: '10'
+      });
+      
+      const response = await fetch(`http://localhost:5263/api/user?${ queryParams }`, {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        method: 'GET',
+        signal: signal
       });
-
-      console.log(response);
       
       const data = await response.json();
       
-      console.log(data);
-
-      setUsers((prevState: any) => [
+      setUsers((prevState: UserData[]) => [
         ...prevState,
         ...data.users
       ]);
-      
-      setNextCursor(data.nextCursor);
 
-      console.log(nextCursor);
+      setNextCursor(data.nextCursor);
+      
+      setIsLoading(false);
 
     } catch (error) {
 
+      setIsLoading(false);
+      
       if (signal.aborted) {
         return;
       }
-
-      console.log(error);
-
+      
+      setIsError(true);
+      
+      if (error instanceof TypeError) {
+        setError({ message: error.message });
+      }
+      
     }
 
-  }
-
-  React.useEffect(() => {
+    return () => controller.abort();
     
-    getUsers();
+  }, [nextCursor]);
 
-  }, []);
+  const handleObserver = React.useCallback((entries: any) => {
 
-  const handleScroll = () => {
-    const bottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight;
-
-    if (bottom) {
+    const [target] = entries;
+    if (target.isIntersecting) {
       getUsers();
     }
-  }
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
+  }, [getUsers]);
+
+  React.useEffect(() => {
+
+    const option = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0
     };
-  }, [users]);
-  
-  // const {
-  //   users,
-  //   isLoading,
-  //   isError,
-  //   error,
-  //   nextCursor } = useUsers(currentCursor);
+
+    const observer = new IntersectionObserver(handleObserver, option);
+
+    let observerRefValue: HTMLSpanElement;
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+      observerRefValue = loadMoreRef.current;
+    }
+
+    return () => {
+      if (observerRefValue) {
+        observer.unobserve(observerRefValue);
+      }
+    };
+
+  }, [handleObserver]);
 
   return (
-    <section className="container">
-      <h2>Users</h2>
-      
-      {/* { isError &&
-        <p>Error: { error.message }</p>
-      } */}
-
-      <div className="table-responsive">
-        <table className="table" role="table" aria-label="Users">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Username</th>
-              <th scope="col">Email</th>
-            </tr>
-          </thead>
-          { users !== undefined &&
-            users[0] !== null &&
-            users[0] &&
-            <tbody>
-              { Object.keys(users).map((user, key) => (
-                <tr key={ key }>
-                  <th scope="row">{ key + 1 }</th>
-                  <td>{ users[key].username }</td>
-                  <td>{ users[key].email }</td>
-                </tr>
-              ))}
-            </tbody>
-          }
-        </table>
-      </div>
-
-      {/* { isLoading &&
-        <p>Loading More Posts</p>
-      } */}
-
-    </section>
-
-    // <Users
-    //   users={ users }
-    //   isLoading={ isLoading }
-    //   isError={ isError }
-    //   error={ error }
-    //   nextCursor={ nextCursor }
-    // ></Users>
+    <Users
+      users={ users }
+      isLoading={ isLoading }
+      isError={ isError }
+      error={ error }
+      nextCursor={ nextCursor }
+      loadMoreRef={ loadMoreRef }
+    ></Users>
   )
 }
 

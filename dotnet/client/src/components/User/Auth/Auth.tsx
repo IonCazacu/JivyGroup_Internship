@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import FormData from '../../../interfaces/FormData';
-import FormError from '../../../interfaces/FormError';
-import FormField from '../../../interfaces/FormField';
+import FormData from '../../../Ports/FormData';
+import FormError from '../../../Ports/FormError';
+import FormField from '../../../Ports/FormField';
 
 // import './Auth.scss';
 
