@@ -50,7 +50,7 @@ namespace server.Services.UserServices.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get(
+        public async Task<ActionResult<PaginationModel>> Get(
             [FromQuery(Name = "cursor")] int cursor = 0,
             [FromQuery(Name = "limit")] int limit = 100)
         {

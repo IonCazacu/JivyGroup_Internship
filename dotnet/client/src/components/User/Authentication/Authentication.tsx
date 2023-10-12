@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import FormData from '../../../Ports/FormData';
-import FormError from '../../../Ports/FormError';
-import FormField from '../../../Ports/FormField';
+import FormData from '../../../ports/FormData';
+import FormError from '../../../ports/FormError';
+import FormField from '../../../ports/FormField';
 
-// import './Auth.scss';
+// import './Authentication.scss';
 
 // Interface for form state
 interface State {

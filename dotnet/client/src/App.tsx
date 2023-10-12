@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import Navbar from './components/Navbar/Navbar';
-import HomeView from './views/HomeView';
-import SignupView from './views/SignupView/SignupView';
-import UsersView from './views/UsersView';
+import HomeView from './pages/Home/Home';
+import SignupView from './pages/Signup/Signup';
+import UsersView from './pages/Users/Users';
 
 import './App.scss';
 

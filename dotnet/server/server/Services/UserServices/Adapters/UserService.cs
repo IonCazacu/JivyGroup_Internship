@@ -35,6 +35,8 @@ namespace server.Services.UserServices.Adapters
         }
         public async Task<(IEnumerable<User>, int)> GetUsers(int cursor, int limit)
         {
+            int maxId = await userContext.Users.MaxAsync(u => u.Id);
+
             IEnumerable<User> users = await userContext.Users
                 .Select(u => new User
                 {
@@ -42,12 +44,12 @@ namespace server.Services.UserServices.Adapters
                     Username = u.Username,
                     Email = u.Email
                 })
-                .Where(u => u.Id >= cursor)
-                .Take(limit + 1)
+                .Where(u => u.Id > cursor && u.Id <= maxId)
                 .OrderBy(u => u.Id)
+                .Take(limit)
                 .ToListAsync();
 
-            int nextCursor = users.Count() > limit ? users.Last().Id : -1;
+            int nextCursor = users.Any() ? users.Last().Id : -1;
 
             return (users.Take(limit), nextCursor);
         }

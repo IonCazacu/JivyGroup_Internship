@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using server.Services.UserServices.Model;
 using server.Services.UserServices.Ports;
@@ -26,6 +27,12 @@ namespace server.Services.UserServices.Authorization.Basic
 
         protected override async Task < AuthenticateResult > HandleAuthenticateAsync ()
         {
+            var endpoint = Context.GetEndpoint();
+            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
+            {
+                return AuthenticateResult.NoResult();
+            }
+
             // No authorization header, return fail
             if (!Request.Headers.ContainsKey ("Authorization"))
             {
@@ -79,7 +86,8 @@ namespace server.Services.UserServices.Authorization.Basic
                 // Each Claim object represents a specific piece of information
                 // about a user
                 var claims = new[] {
-                    new Claim (ClaimTypes.Name, user.Username!)
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username!)
                 };
 
                 var identity = new ClaimsIdentity (claims, Scheme.Name);

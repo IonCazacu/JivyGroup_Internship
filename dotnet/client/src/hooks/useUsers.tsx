@@ -1,17 +1,15 @@
 import React from "react";
-import Users from "../components/Users/Users";
-import UserData from "../Ports/UserData";
+import UserData from "../ports/UserData";
 
-import '../components/Users/Users.scss';
+const useUsers = () => {
 
-const UsersView = () => {
-  
+  const API = 'http://localhost:5263/api/user';
+
   const [users, setUsers] = React.useState<UserData[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<any>({});
+  const [error, setError] = React.useState<unknown>({});
   const [nextCursor, setNextCursor] = React.useState<number>(0);
-  const loadMoreRef = React.useRef<HTMLSpanElement>(null);
 
   const getUsers = React.useCallback(async () => {
     
@@ -26,10 +24,10 @@ const UsersView = () => {
       
       const queryParams = new URLSearchParams({
         cursor: nextCursor.toString(),
-        limit: '10'
+        limit: '200'
       });
       
-      const response = await fetch(`http://localhost:5263/api/user?${ queryParams }`, {
+      const response = await fetch(`${ API }?${ queryParams }`, {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -43,13 +41,13 @@ const UsersView = () => {
         ...prevState,
         ...data.users
       ]);
-
+  
       setNextCursor(data.nextCursor);
       
       setIsLoading(false);
-
+  
     } catch (error) {
-
+  
       setIsLoading(false);
       
       if (signal.aborted) {
@@ -62,56 +60,22 @@ const UsersView = () => {
         setError({ message: error.message });
       }
       
+    } finally {
+      setIsLoading(false);
     }
-
+  
     return () => controller.abort();
     
   }, [nextCursor]);
 
-  const handleObserver = React.useCallback((entries: any) => {
+  return {
+    users,
+    isLoading,
+    isError,
+    error,
+    getUsers
+  }
 
-    const [target] = entries;
-    if (target.isIntersecting) {
-      getUsers();
-    }
+};
 
-  }, [getUsers]);
-
-  React.useEffect(() => {
-
-    const option = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 1.0
-    };
-
-    const observer = new IntersectionObserver(handleObserver, option);
-
-    let observerRefValue: HTMLSpanElement;
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-      observerRefValue = loadMoreRef.current;
-    }
-
-    return () => {
-      if (observerRefValue) {
-        observer.unobserve(observerRefValue);
-      }
-    };
-
-  }, [handleObserver]);
-
-  return (
-    <Users
-      users={ users }
-      isLoading={ isLoading }
-      isError={ isError }
-      error={ error }
-      nextCursor={ nextCursor }
-      loadMoreRef={ loadMoreRef }
-    ></Users>
-  )
-}
-
-export default UsersView;
+export default useUsers;

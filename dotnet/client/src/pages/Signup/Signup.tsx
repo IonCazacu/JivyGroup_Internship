@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './SignupView.module.scss';
+import styles from './Signup.module.scss';
 
 const USERNAME_REGEX = /^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -86,11 +86,9 @@ const SignupView: React.FC = () => {
 
     try {
 
-      // if (!validUsername || !validEmail || !validPassword) {
-      
-      //   throw new Error ('Please fill out all fields.');
-        
-      // }
+      if (!validUsername || !validEmail || !validPassword) {
+        throw new Error ('Please fill out all fields.');
+      }
       
       const formData = {
         username: formState.username,
