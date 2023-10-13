@@ -33,6 +33,7 @@ namespace server.Services.UserServices.Adapters
                 throw new Exception(e.Message);
             }
         }
+
         public async Task<(IEnumerable<User>, int)> GetUsers(int cursor, int limit)
         {
             int maxId = await userContext.Users.MaxAsync(u => u.Id);

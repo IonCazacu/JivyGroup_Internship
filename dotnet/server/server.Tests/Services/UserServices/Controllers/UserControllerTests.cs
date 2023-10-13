@@ -108,12 +108,15 @@ public class UserControllerTests
 
     public class GetUsersMethod
     {
-        // TODO: Test doesn't work with new modifications within controller and service
+        // TODO: Tests doesn't work with new modifications within controller and service
         private readonly Mock<IUserService> _userServiceMock = new();
 
         [Fact]
         public async Task GetAllUsersReturnsOkObjectResult()
         {
+            int cursor = 0;
+            int limit = 1;
+
             User[] users = new[]
             {
                 new User
@@ -146,27 +149,48 @@ public class UserControllerTests
             };
 
             _userServiceMock
-                .Setup(service => service.GetUsers())
-                .ReturnsAsync(users);
+                .Setup(service => service.GetUsers(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync((users, 1))
+                // `Callback` method is used to intercept the arguments passed to the GetUsers method
+                .Callback<int, int>((c, l) =>
+                {
+                    if (l < 50)
+                    {
+                        l = 50;
+                    }
+                });
 
             var controller = new UserController(_userServiceMock.Object);
 
-            var result = await controller.Get();
+            var result = await controller.Get(cursor, limit);
 
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            Assert.Equal(users, okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
+
+            var paginationModel = Assert.IsType<PaginationModel>(okResult.Value);
+            Assert.Equal(users, paginationModel.Users);
         }
 
         [Fact]
         public async Task GetAllUsersReturnsNotFoundObjectResult()
         {
+            int cursor = 0;
+            int limit = 1;
+
             _userServiceMock
-                .Setup(service => service.GetUsers())
-                .ReturnsAsync(Array.Empty<User>());
+                .Setup(service => service.GetUsers(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync((Array.Empty<User>(), 1))
+                .Callback<int, int>((c, l) =>
+                {
+                    if (l < 50)
+                    {
+                        l = 50;
+                    }
+                });
 
             var controller = new UserController(_userServiceMock.Object);
 
-            var result = await controller.Get();
+            var result = await controller.Get(cursor, limit);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
             Assert.Equal(404, notFoundResult.StatusCode);
@@ -175,14 +199,17 @@ public class UserControllerTests
         [Fact]
         public async Task GetAllUsersReturnsException()
         {
+            int cursor = 0;
+            int limit = 1;
+
             _userServiceMock
-                .Setup(service => service.GetUsers())
+                .Setup(service => service.GetUsers(It.IsAny<int>(), It.IsAny<int>()))
                 .ThrowsAsync(new Exception("Unknown exception"));
 
             var controller = new UserController(_userServiceMock.Object);
-            var result = await controller.Get();
+            var result = await controller.Get(cursor, limit);
 
-            var enumUserActionResult = Assert.IsType<ActionResult<IEnumerable<User>>>(result);
+            var enumUserActionResult = Assert.IsType<ActionResult<PaginationModel>>(result);
             var statusCode = Assert.IsType<ObjectResult>(enumUserActionResult.Result);
             Assert.Equal(500, statusCode.StatusCode);
         }
