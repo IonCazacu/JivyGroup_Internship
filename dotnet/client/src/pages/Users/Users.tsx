@@ -5,7 +5,7 @@ import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 const UsersView = () => {
 
   const { users, isLoading, isError, error, getUsers } = useUsers();
-  const loadMoreRef  = useInfiniteScroll(getUsers);
+  const loadMoreRef = useInfiniteScroll(getUsers);
 
   return (
     <Users

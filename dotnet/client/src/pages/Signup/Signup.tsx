@@ -6,6 +6,13 @@ const USERNAME_REGEX = /^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,1
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,}$/;
 
+type SignupForm = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
 const SignupView: React.FC = () => {
 
   const [formState, setFormState] = React.useState({
@@ -75,8 +82,8 @@ const SignupView: React.FC = () => {
     }));
 
   }, [formState.username, formState.email, formState.password, formState.confirmPassword]);
-  
-  const handleSubmit = async ($event: React.ChangeEvent<HTMLFormElement>) => {
+
+  const handleSubmit: React.FormEventHandler = async ($event: React.FormEvent<HTMLFormElement>) => {
     
     $event.preventDefault();
     
@@ -89,8 +96,8 @@ const SignupView: React.FC = () => {
       if (!validUsername || !validEmail || !validPassword) {
         throw new Error ('Please fill out all fields.');
       }
-      
-      const formData = {
+
+      const signupForm: SignupForm = {
         username: formState.username,
         email: formState.email,
         password: formState.password,
@@ -98,11 +105,11 @@ const SignupView: React.FC = () => {
       };
 
       const response = await fetch('http://localhost:5263/api/user', {
-        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        method: 'POST',
+        body: JSON.stringify(signupForm)
         // body: JSON.stringify({})
       });
 
@@ -131,23 +138,21 @@ const SignupView: React.FC = () => {
         }));
       
       } else {
-      
-        console.log("An unexpected error occurred:", error);
+
+        console.error("An unexpected error occurred:", error);
       
       }
-
     }
-
   }
 
   return (
     <section className={ styles["container"] }>
       <form className={ styles["form__box-shadow"] } onSubmit={ handleSubmit }>
         <p
+          aria-live="assertive"
           className={
-            formState.errorMessage ? styles["error-shown"] : styles["hidden"]
-          }
-          aria-live="assertive">{ formState.errorMessage }
+            formState.errorMessage ? "error-shown" : "hidden"
+          }>{ formState.errorMessage }
         </p>
         <h2>Sign Up</h2>
         <div className={ styles["form-group"] }>
@@ -160,7 +165,7 @@ const SignupView: React.FC = () => {
             id="username"
             autoComplete="off"
             aria-describedby="uidnote"
-            // required
+            required
             className={ styles["form-input"] }
             value={ formState.username }
             aria-invalid={ formState.validUsername ? "false" : "true" }
@@ -181,7 +186,7 @@ const SignupView: React.FC = () => {
             className={
               formState.usernameFocus &&
               formState.username &&
-              !formState.validUsername ? styles["sr-shown"] : styles["hidden"]
+              !formState.validUsername ? styles["sr-shown"] : "hidden"
             }>
             8 to 20 characters.<br />
             Dots and underscores are allowed.<br />
@@ -199,7 +204,7 @@ const SignupView: React.FC = () => {
             id="email"
             autoComplete="off"
             aria-describedby="emlnote"
-            // required
+            required
             className={ styles["form-input"] }
             value={ formState.email }
             aria-invalid={ formState.validEmail ? "false" : "true" }
@@ -220,7 +225,7 @@ const SignupView: React.FC = () => {
             className={
               formState.emailFocus &&
               formState.email &&
-              !formState.validEmail ? styles["sr-shown"] : styles["hidden"]
+              !formState.validEmail ? styles["sr-shown"] : "hidden"
             }>Invalid email address.
           </p>
         </div>
@@ -234,7 +239,7 @@ const SignupView: React.FC = () => {
             id="password"
             type="password"
             aria-describedby="pwdnote"
-            // required
+            required
             value={ formState.password }
             className={ styles["form-input"] }
             aria-invalid={ formState.validPassword ? "false" : "true" }
@@ -254,7 +259,8 @@ const SignupView: React.FC = () => {
             id="pwdnote"
             className={
               formState.passwordFocus &&
-              !formState.validPassword ? styles["sr-shown"] : styles["hidden"]
+              formState.password &&
+              !formState.validPassword ? styles["sr-shown"] : "hidden"
             }>
             At least 8 characters long.<br />
             Must include lowercase and uppercase letters, a number and a special character.<br />
@@ -271,7 +277,7 @@ const SignupView: React.FC = () => {
             id="confirm_password"
             type="password"
             aria-describedby="confirmnote"
-            // required
+            required
             value={ formState.confirmPassword }
             className={ styles["form-input"] }
             aria-invalid={ formState.validConfirmPassword ? "false" : "true" }
@@ -291,7 +297,8 @@ const SignupView: React.FC = () => {
             id="confirmnote"
             className={
               formState.confirmPasswordFocus &&
-              !formState.validConfirmPassword ? styles["sr-shown"] : styles["hidden"]
+              formState.confirmPassword &&
+              !formState.validConfirmPassword ? styles["sr-shown"] : "hidden"
             }>Must match the first password field.
           </p>
         </div>

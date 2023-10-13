@@ -24,7 +24,7 @@ const useUsers = () => {
       
       const queryParams = new URLSearchParams({
         cursor: nextCursor.toString(),
-        limit: '200'
+        limit: '50'
       });
       
       const response = await fetch(`${ API }?${ queryParams }`, {

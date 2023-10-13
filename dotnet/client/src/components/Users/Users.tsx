@@ -1,9 +1,9 @@
 import React from "react";
 import UserData from "../../ports/UserData";
 
-import "./Users.scss";
+import styles from "./Users.module.scss";
 
-interface Props {
+type Props = {
   users: UserData[];
   isLoading: boolean;
   isError: boolean;
@@ -13,12 +13,13 @@ interface Props {
 
 const Users: React.FC<Props> = (props: Props) => {
   return (
-    <section className="container">
+    <section className={styles["container"]}>
+      <p
+        aria-live="assertive"
+        className={props.isError ? "error-shown" : "hidden"}
+      >{(props.error as Error).message}</p>
       <h2>Users</h2>
-      { props.isError &&
-        <p>Error: { (props.error as Error).message }</p>
-      }
-      <div className="table-responsive">
+      <div className={styles["table-responsive"]}>
         <table className="table" role="table" aria-label="Users">
           <thead>
             <tr>
@@ -27,22 +28,22 @@ const Users: React.FC<Props> = (props: Props) => {
               <th scope="col">Email</th>
             </tr>
           </thead>
-          { props.users && props.users[0] !== null && (
+          {props.users && props.users[0] !== null && (
             <tbody>
               { Object.keys(props.users).map((_, key) => (
                 <tr key={ key }>
-                  <th scope="row">{ key + 1 }</th>
-                  <td>{ props.users[key].username }</td>
-                  <td>{ props.users[key].email }</td>
+                  <th scope="row">{key + 1}</th>
+                  <td>{props.users[key].username}</td>
+                  <td>{props.users[key].email}</td>
                 </tr>
               ))}
             </tbody>
           )}
         </table>
       </div>
-      <span ref={ props.loadMoreRef }>
-        { props.isLoading &&
-          <h1>Loading...</h1>
+      <span aria-live="assertive" ref={props.loadMoreRef}>
+        {props.isLoading &&
+          <h6>Loading...</h6>
         }
       </span>
     </section>

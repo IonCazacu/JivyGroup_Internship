@@ -51,16 +51,20 @@ namespace server.Services.UserServices.Controllers
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<PaginationModel>> Get(
-            [FromQuery(Name = "cursor")] int cursor = 0,
-            [FromQuery(Name = "limit")] int limit = 100)
+            [FromQuery(Name = "cursor")] int cursor = 0, [FromQuery(Name = "limit")] int limit = 50)
         {
+            if (limit < 50)
+            {
+                limit = 50;
+            }
+
             try
             {
                 (IEnumerable<User> users, int nextCursor) = await _userService.GetUsers(cursor, limit);
 
                 if (users == null || !users.Any())
                 {
-                    return new NotFoundObjectResult("No users found.");
+                    return new NotFoundObjectResult("No users was found.");
                 }
 
                 return new OkObjectResult(new PaginationModel
