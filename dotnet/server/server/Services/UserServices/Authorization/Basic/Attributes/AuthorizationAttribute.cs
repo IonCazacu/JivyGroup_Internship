@@ -8,17 +8,14 @@ namespace server.Services.UserServices.Authorization.Basic.Attributes
     // action methods except for methods decorated with the [AllowAnonymous]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class AuthorizeAttribute
-        : Attribute
-        , IAuthorizationFilter
+    public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             // skip authentication if action is decorated with [AllowAnonymous]
-            var allowAnonymous =
-                context.ActionDescriptor.EndpointMetadata.
-                OfType < AllowAnonymousAttribute > ().
-                Any();
+            var allowAnonymous = context.ActionDescriptor.EndpointMetadata
+                .OfType<AllowAnonymousAttribute>()
+                .Any();
             if (allowAnonymous) {
                 return;
             }
@@ -26,14 +23,12 @@ namespace server.Services.UserServices.Authorization.Basic.Attributes
             User? user = context.HttpContext.Items["User"] as User;
             if (user == null) {
                 // if not logged in return 401 Unauthorized
-                context.Result = new JsonResult (
-                    new { message = "Unauthorized" })
-                    { StatusCode = StatusCodes.Status401Unauthorized };
+                context.Result = new JsonResult(
+                    new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
 
                 // set 'WWW-Authenticate' header to trigger login popup in
                 // browsers
-                context.HttpContext.Response.Headers.Add(
-                    "WWW-Authenticate", "Basic");
+                context.HttpContext.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"\", charset=\"UTF-8\"");
             }
         }
     }

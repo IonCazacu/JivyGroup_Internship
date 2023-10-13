@@ -25,49 +25,37 @@ namespace server.Services.UserServices.Authorization.Basic
             _userService = userService;
         }
 
-        protected override async Task < AuthenticateResult > HandleAuthenticateAsync ()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var endpoint = Context.GetEndpoint();
-            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
-            {
-                return AuthenticateResult.NoResult();
-            }
-
             // No authorization header, return fail
-            if (!Request.Headers.ContainsKey ("Authorization"))
+            if (!Request.Headers.ContainsKey("Authorization"))
             {
-                return AuthenticateResult.Fail ("Missing authorization header");
+                return AuthenticateResult.Fail("Missing Authorization Header");
             }
 
             try
             {
-                var authenticationHeader =
-                    AuthenticationHeaderValue.Parse (
-                        Request.Headers["Authorization"]);
+                var authenticationHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
                 
                 // If authorization header doesn't contain basic, return fail
                 if (authenticationHeader.Scheme != "Basic")
                 {
-                    return AuthenticateResult.Fail (
-                        "Invalid authorization scheme");
+                    return AuthenticateResult.Fail("Invalid authorization scheme");
                 }
 
                 var parameter = authenticationHeader.Parameter;
-                if (string.IsNullOrEmpty (parameter))
+                if (string.IsNullOrEmpty(parameter))
                 {
-                    return AuthenticateResult.Fail (
-                        "Username or password cannot be empty");
+                    return AuthenticateResult.Fail("Username or password cannot be empty");
                 }
 
                 // Decrypt the authorization header and split out the client
                 // username/password which is separate by the first ':'
-                var credentials = Encoding.UTF8.GetString (
-                    Convert.FromBase64String (parameter)).
-                    Split(':', 2);
+                var credentials = Encoding.UTF8.GetString(
+                    Convert.FromBase64String (parameter)).Split(':', 2);
                 if (credentials.Length != 2)
                 {
-                    return AuthenticateResult.Fail (
-                        "Invalid credentials format");
+                    return AuthenticateResult.Fail("Invalid credentials format");
                 }
 
                 // Store the client usernae and password
@@ -75,11 +63,10 @@ namespace server.Services.UserServices.Authorization.Basic
                 string password = credentials[1];
 
                 // Authenticate the user
-                User? user = await _userService.Login (username, password);
+                User? user = await _userService.Login(username, password);
                 if (user == null)
                 {
-                    return AuthenticateResult.Fail (
-                        "Username or password is invalid");
+                    return AuthenticateResult.Fail("Username or password is invalid");
                 }
 
                 // claims - an array of Claim objects

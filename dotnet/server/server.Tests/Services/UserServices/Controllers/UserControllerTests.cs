@@ -108,6 +108,7 @@ public class UserControllerTests
 
     public class GetUsersMethod
     {
+        // TODO: Test doesn't work with new modifications within controller and service
         private readonly Mock<IUserService> _userServiceMock = new();
 
         [Fact]

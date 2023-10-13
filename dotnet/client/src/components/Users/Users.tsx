@@ -8,7 +8,7 @@ type Props = {
   isLoading: boolean;
   isError: boolean;
   error: unknown;
-  loadMoreRef: React.RefObject<HTMLSpanElement>;
+  loadMoreRef: React.RefObject<HTMLParagraphElement>;
 }
 
 const Users: React.FC<Props> = (props: Props) => {
@@ -30,7 +30,7 @@ const Users: React.FC<Props> = (props: Props) => {
           </thead>
           {props.users && props.users[0] !== null && (
             <tbody>
-              { Object.keys(props.users).map((_, key) => (
+              {Object.keys(props.users).map((_, key) => (
                 <tr key={ key }>
                   <th scope="row">{key + 1}</th>
                   <td>{props.users[key].username}</td>
@@ -41,11 +41,11 @@ const Users: React.FC<Props> = (props: Props) => {
           )}
         </table>
       </div>
-      <span aria-live="assertive" ref={props.loadMoreRef}>
+      <p aria-live="assertive" ref={props.loadMoreRef}>
         {props.isLoading &&
-          <h6>Loading...</h6>
+          <span>Loading...</span>
         }
-      </span>
+      </p>
     </section>
   )
 }

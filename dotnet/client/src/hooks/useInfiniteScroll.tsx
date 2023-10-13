@@ -2,7 +2,7 @@ import React from "react";
 
 const useInfiniteScroll = (getUsers: CallableFunction) => {
 
-  const loadMoreRef = React.useRef<HTMLSpanElement>(null);
+  const loadMoreRef = React.useRef<HTMLParagraphElement>(null);
   
   React.useEffect(() => {
     
@@ -21,7 +21,7 @@ const useInfiniteScroll = (getUsers: CallableFunction) => {
 
     const observer: IntersectionObserver = new IntersectionObserver(handleObserver, option);
 
-    let observerRefValue: HTMLSpanElement;
+    let observerRefValue: HTMLParagraphElement;
 
     if (loadMoreRef.current) {
       observer.observe(loadMoreRef.current);
