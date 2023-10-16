@@ -24,15 +24,22 @@ body {
     flex-direction: column;
     flex-grow: 1;
   }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  
+  [type=submit]:not(:disabled),
+  [type=reset]:not(:disabled),
+  [type=submit]:not(:disabled),
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  
+  button[disabled] {
+    pointer-events: none;
+  }
 }
 
-[type=submit]:not(:disabled),
-[type=reset]:not(:disabled),
-[type=submit]:not(:disabled),
-button:not(:disabled) {
-  cursor: pointer;
-}
-
-button[disabled] {
-  pointer-events: none;
-}

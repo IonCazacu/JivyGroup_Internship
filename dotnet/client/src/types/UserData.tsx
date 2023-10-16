@@ -1,4 +1,4 @@
-interface UserData {
+type UserData = {
   id: number;
   username: string;
   email: string;

@@ -1,110 +1,20 @@
-import React from 'react';
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import signupSchema from "./SignupSchema";
 
-import styles from './Signup.module.scss';
-
-const USERNAME_REGEX = /^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$/;
-const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,}$/;
-
-type SignupForm = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import styles from "./Signup.module.scss";
 
 const SignupView: React.FC = () => {
 
-  const [formState, setFormState] = React.useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const API = 'http://localhost:5263/api/user';
+  
+  const { control, formState: { isValid, errors }, handleSubmit, setError, watch } = useForm({ mode: "all" });
 
-    validUsername: false,
-    validEmail: false,
-    validPassword: false,
-    validConfirmPassword: false,
-    
-    usernameFocus: false,
-    emailFocus: false,
-    passwordFocus: false,
-    confirmPasswordFocus: false,
-    
-    errorMessage: '',
-    successMessage: false,
-  });
-
-  React.useEffect(() => {
-    const result = USERNAME_REGEX.test(formState.username);
-    
-    setFormState(prevState => ({
-      ...prevState,
-      validUsername: result
-    }));
-
-  }, [formState.username]);
-
-  React.useEffect(() => {
-    const result = EMAIL_REGEX.test(formState.email);
-
-    setFormState(prevState => ({
-      ...prevState,
-      validEmail: result
-    }));
-
-  }, [formState.email]);
-
-  React.useEffect(() => {
-    const result = PASSWORD_REGEX.test(formState.password);
-    
-    setFormState(prevState => ({
-      ...prevState,
-      validPassword: result
-    }));
-
-    const match = formState.password === formState.confirmPassword;
-    
-    setFormState(prevState => ({
-      ...prevState,
-      validConfirmPassword: match
-    }));
-
-  }, [formState.password, formState.confirmPassword]);
-
-  React.useEffect(() => {
-
-    setFormState(prevState => ({
-    
-      ...prevState,
-      errorMessage: ''
-    
-    }));
-
-  }, [formState.username, formState.email, formState.password, formState.confirmPassword]);
-
-  const handleSubmit: React.FormEventHandler = async ($event: React.FormEvent<HTMLFormElement>) => {
-    
-    $event.preventDefault();
-    
-    const validUsername = USERNAME_REGEX.test(formState.username);
-    const validEmail = EMAIL_REGEX.test(formState.email);
-    const validPassword = PASSWORD_REGEX.test(formState.password);
+  const onSubmit = async (signupForm: any) => {
 
     try {
 
-      if (!validUsername || !validEmail || !validPassword) {
-        throw new Error ('Please fill out all fields.');
-      }
-
-      const signupForm: SignupForm = {
-        username: formState.username,
-        email: formState.email,
-        password: formState.password,
-        confirmPassword: formState.confirmPassword
-      };
-
-      const response = await fetch('http://localhost:5263/api/user', {
+      const response = await fetch(API, {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -117,203 +27,97 @@ const SignupView: React.FC = () => {
       console.log(data);
 
       if (!response.ok) {
-
-        const msg = `HTTP error! status: ${ response.status }, message: ${ data.message }`;
         
-        throw new Error(msg);
+        throw new Error(data.message);
 
       }
       
     } catch (error) {
       
+      let msg = undefined;
+
       if (error instanceof TypeError) {
 
-        const msg = `A network error occurred: ${ error.message }`;
-
-        setFormState(prevState => ({
-    
-          ...prevState,
-          errorMessage: msg
-      
-        }));
-      
+        msg = `Network response was not ok`;
+        
       } else {
 
-        console.error("An unexpected error occurred:", error);
+        msg = `${ error }`;
       
       }
+      
+      setError("root", {
+        message: msg
+      });
     }
   }
 
   return (
-    <section className={ styles["container"] }>
-      <form className={ styles["form__box-shadow"] } onSubmit={ handleSubmit }>
+    <section className={styles["container"]}>
+      <form className={styles["form__box-shadow"]} onSubmit={handleSubmit(onSubmit)}>
         <p
           aria-live="assertive"
           className={
-            formState.errorMessage ? "error-shown" : "hidden"
-          }>{ formState.errorMessage }
+            !!errors.root?.message ? "error-shown" : "hidden"
+          }>{errors.root?.message}
         </p>
         <h2>Sign Up</h2>
-        <div className={ styles["form-group"] }>
-          <label
-            className={ styles["form-label"] }
-            htmlFor="username">Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            autoComplete="off"
-            aria-describedby="uidnote"
-            required
-            className={ styles["form-input"] }
-            value={ formState.username }
-            aria-invalid={ formState.validUsername ? "false" : "true" }
-            onChange={
-              ($event) => setFormState(prevState => ({
-                ...prevState, username: $event.target.value
-            }))}
-            onFocus={
-              () => setFormState(prevState => ({
-                ...prevState, usernameFocus: true
-            }))}
-            onBlur={
-              () => setFormState(prevState => ({
-                ...prevState, usernameFocus: false
-            }))} />
-          <p
-            id="uidnote"
-            className={
-              formState.usernameFocus &&
-              formState.username &&
-              !formState.validUsername ? styles["sr-shown"] : "hidden"
-            }>
-            8 to 20 characters.<br />
-            Dots and underscores are allowed.<br />
-            Consecutive underscores or dots are not allowed.
-          </p>
-        </div>
 
-        <div className={ styles["form-group"] }>
-          <label
-            className={ styles["form-label"] }
-            htmlFor="email">Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            autoComplete="off"
-            aria-describedby="emlnote"
-            required
-            className={ styles["form-input"] }
-            value={ formState.email }
-            aria-invalid={ formState.validEmail ? "false" : "true" }
-            onChange={
-              ($event) => setFormState(prevState => ({
-                ...prevState, email: $event.target.value
-            }))}
-            onFocus={
-              () => setFormState(prevState => ({
-                ...prevState, emailFocus: true
-            }))}
-            onBlur={
-              () => setFormState(prevState => ({
-                ...prevState, emailFocus: false
-            }))} />
-          <p
-            id="emlnote"
-            className={
-              formState.emailFocus &&
-              formState.email &&
-              !formState.validEmail ? styles["sr-shown"] : "hidden"
-            }>Invalid email address.
-          </p>
-        </div>
+        {signupSchema(watch).map((group, key) => {
 
-        <div className={ styles["form-group"] }>
-          <label
-            className={ styles["form-label"] }
-            htmlFor="password">Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            aria-describedby="pwdnote"
-            required
-            value={ formState.password }
-            className={ styles["form-input"] }
-            aria-invalid={ formState.validPassword ? "false" : "true" }
-            onChange={
-              ($event) => setFormState(prevState => ({
-                ...prevState, password: $event.target.value
-            }))}
-            onFocus={
-              () => setFormState(prevState => ({
-                ...prevState, passwordFocus: true
-            }))}
-            onBlur={
-              () => setFormState(prevState => ({
-                ...prevState, passwordFocus: false
-            }))} />
-          <p
-            id="pwdnote"
-            className={
-              formState.passwordFocus &&
-              formState.password &&
-              !formState.validPassword ? styles["sr-shown"] : "hidden"
-            }>
-            At least 8 characters long.<br />
-            Must include lowercase and uppercase letters, a number and a special character.<br />
-            Allowed special characters: <span aria-label="exclamation mark symbol">!</span> <span aria-label="at symbol">@</span> <span aria-label="hashtag symbol">#</span> <span aria-label="dollar sign">$</span> <span aria-label="percent symbol">%</span>
-          </p>
-        </div>
+          return (
+            <fieldset key={key} className={styles["form-set"]}>
+              <label className={styles["form-label"]} htmlFor={group.name}>
+                {group.label}
+              </label>
 
-        <div className={ styles["form-group"] }>
-          <label
-            className={ styles["form-label"] }
-            htmlFor="username">Confirm Password
-          </label>
-          <input
-            id="confirm_password"
-            type="password"
-            aria-describedby="confirmnote"
-            required
-            value={ formState.confirmPassword }
-            className={ styles["form-input"] }
-            aria-invalid={ formState.validConfirmPassword ? "false" : "true" }
-            onChange={
-              ($event) => setFormState(prevState => ({
-                ...prevState, confirmPassword: $event.target.value
-            }))}
-            onFocus={
-              () => setFormState(prevState => ({
-                ...prevState, confirmPasswordFocus: true
-            }))}
-            onBlur={
-              () => setFormState(prevState => ({
-                ...prevState, confirmPasswordFocus: false
-            }))} />
-          <p
-            id="confirmnote"
-            className={
-              formState.confirmPasswordFocus &&
-              formState.confirmPassword &&
-              !formState.validConfirmPassword ? styles["sr-shown"] : "hidden"
-            }>Must match the first password field.
-          </p>
-        </div>
+              <Controller
+                name={group.name}
+                control={control}
+                defaultValue=""
+                rules={group.validation}
+                render={({ field, fieldState }) => {
+
+                  return (
+                    <div className={styles["form-field"]}>
+                      <input
+                        {...field}
+                        type={group.type}
+                        id={field.name}
+                        autoComplete="off"
+                        required={group.validation.required}
+                        className={styles["form-input"]}
+                        aria-describedby={group.ariaDescribedBy}
+                        aria-invalid={!!fieldState.error && !!field.value}
+                      />
+                      <div
+                        role="alert"
+                        id={group.ariaDescribedBy}
+                        className={
+                          !!fieldState.error && !!field.value ? styles["sr-shown"] : "hidden"
+                        }>
+                        {group.validation.hint}
+                      </div>
+                    </div>
+                  );
+
+                }}
+              ></Controller>
+
+            </fieldset>
+          );
+
+        })}
 
         <button
           disabled={
-            !formState.validUsername ||
-            !formState.validEmail ||
-            !formState.validPassword ||
-            !formState.validConfirmPassword
+            !isValid
           }>Sign Up
         </button>
+
       </form>
     </section>
   )
-}
+};
 
 export default SignupView;

@@ -1,5 +1,5 @@
 import React from "react";
-import UserData from "../ports/UserData";
+import UserData from "../types/UserData";
 
 const useUsers = () => {
 

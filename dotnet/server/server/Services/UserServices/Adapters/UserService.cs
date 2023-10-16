@@ -76,24 +76,17 @@ namespace server.Services.UserServices.Adapters
 
         public async Task<User?> AddUser(User user)
         {
-            try
-            {
-                User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
+            User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
 
-                if (userToAdd != null)
-                {
-                    throw new IntegrityException("That email is already taken");
-                }
-
-                userContext.Users.Add(user);
-                await userContext.SaveChangesAsync();
-                
-                return user;
-            }
-            catch (Exception e)
+            if (userToAdd != null)
             {
-                throw new Exception(e.Message);
+                throw new IntegrityException("That email is already taken");
             }
+
+            userContext.Users.Add(user);
+            await userContext.SaveChangesAsync();
+            
+            return user;
         }
 
         public async Task<User?> UpdateUser(int userId, User user)

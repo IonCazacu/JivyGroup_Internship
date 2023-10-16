@@ -25,10 +25,6 @@ namespace server.Services.UserServices.Authorization.Basic.Attributes
                 // if not logged in return 401 Unauthorized
                 context.Result = new JsonResult(
                     new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-
-                // set 'WWW-Authenticate' header to trigger login popup in
-                // browsers
-                context.HttpContext.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"\", charset=\"UTF-8\"");
             }
         }
     }

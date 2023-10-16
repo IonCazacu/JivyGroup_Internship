@@ -10,8 +10,6 @@ namespace server.Services.UserServices.Model
         public Guid Uuid { get; set; } = Guid.NewGuid();
 
         [Required()]
-        [MinLength(8)]
-        [MaxLength(20)]
         [RegularExpression(
             @"^(?!.*[._]{2})[_a-zA-Z0-9](?!.*[._]{2})[_a-zA-Z0-9.]{6,18}[_a-zA-Z0-9]$"
         )]
@@ -22,7 +20,6 @@ namespace server.Services.UserServices.Model
         public string? Email { get; set; }
 
         [Required()]
-        [MinLength(8)]
         [RegularExpression(
             @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,}$"
         )]

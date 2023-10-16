@@ -1,9 +1,9 @@
 import React from "react";
-import UserData from "../../ports/UserData";
+import UserData from "../../types/UserData";
 
 import styles from "./Users.module.scss";
 
-type Props = {
+type UsersProps = {
   users: UserData[];
   isLoading: boolean;
   isError: boolean;
@@ -11,7 +11,7 @@ type Props = {
   loadMoreRef: React.RefObject<HTMLParagraphElement>;
 }
 
-const Users: React.FC<Props> = (props: Props) => {
+const Users: React.FC<UsersProps> = (props: UsersProps) => {
   return (
     <section className={styles["container"]}>
       <p
