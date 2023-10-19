@@ -48,6 +48,6 @@ const Users: React.FC<UsersProps> = (props: UsersProps) => {
       </p>
     </section>
   )
-}
+};
 
 export default Users;

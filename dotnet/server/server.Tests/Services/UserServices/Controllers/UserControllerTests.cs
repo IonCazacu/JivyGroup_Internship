@@ -147,10 +147,10 @@ public class UserControllerTests
                 },
             };
 
+            // `Callback` method is used to intercept the arguments passed to the GetUsers method
             _userServiceMock
                 .Setup(service => service.GetUsers(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync((users, 1))
-                // `Callback` method is used to intercept the arguments passed to the GetUsers method
                 .Callback<int, int>((c, l) =>
                 {
                     if (l < 50)

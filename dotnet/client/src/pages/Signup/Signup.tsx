@@ -109,11 +109,7 @@ const SignupView: React.FC = () => {
 
         })}
 
-        <button
-          disabled={
-            !isValid
-          }>Sign Up
-        </button>
+        <button disabled={ !isValid }>Sign Up</button>
 
       </form>
     </section>
