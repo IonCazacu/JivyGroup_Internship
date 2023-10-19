@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using server.Services.UserServices.Model;
 using server.Services.UserServices.Ports;
+using server.Services.UserServices.Session;
 
 namespace server.Services.UserServices.Controllers
 {
@@ -12,6 +13,7 @@ namespace server.Services.UserServices.Controllers
     {
         // private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly Singleton _singleton = Singleton.Instance;
         public UserController(IUserService userService)
         {
             // _logger = logger;
@@ -20,16 +22,16 @@ namespace server.Services.UserServices.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login([FromBody] AuthModel model)
+        public async Task<ActionResult<User>> Login([FromBody] Auth user)
         {
             try
             {
-                if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
+                if (user == null || string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))
                 {
                     return new BadRequestObjectResult("Username and password is required.");
                 }
 
-                User? userToAuthenticate = await _userService.Login(model.Username, model.Password);
+                User? userToAuthenticate = await _userService.Login(user.Username, user.Password);
 
                 if (userToAuthenticate == null)
                 {
@@ -50,7 +52,7 @@ namespace server.Services.UserServices.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<PaginationModel>> Get(
+        public async Task<ActionResult<Pagination>> Get(
             [FromQuery(Name = "cursor")] int cursor = 0, [FromQuery(Name = "limit")] int limit = 50)
         {
             if (limit < 50)
@@ -67,7 +69,7 @@ namespace server.Services.UserServices.Controllers
                     return new NotFoundObjectResult("No users was found.");
                 }
 
-                return new OkObjectResult(new PaginationModel
+                return new OkObjectResult(new Pagination
                 {
                     NextCursor = nextCursor,
                     Users = users
@@ -83,27 +85,61 @@ namespace server.Services.UserServices.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{userId:int}")]
         public async Task<ActionResult<User>> Get(int userId)
         {
-            try
+            string uuid = _singleton.GetSessionUuid!;
+            dynamic? session = _singleton.GetSession(uuid);
+            
+            if (session == null)
             {
-                User? userToGet = await _userService.GetUser(userId);
-
-                if (userToGet == null)
-                {
-                    return new NotFoundObjectResult($"User with Id {userId} was not found.");
-                }
-
-                return new OkObjectResult(userToGet);
+                _singleton.SetSession(uuid,  new { users = new Dictionary<int, User>() });
             }
-            catch (Exception e)
+
+            session = _singleton.GetSession(uuid);
+
+            Dictionary<int, User>? userDictionary = session?.users;
+
+            if (userDictionary != null && userDictionary.ContainsKey(userId))
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new
+                User userData = userDictionary[userId];
+                return new OkObjectResult(userData);
+            }
+            else
+            {
+                try
                 {
-                    Status = StatusCodes.Status500InternalServerError,
-                    e.Message
-                });
+                    User? userToGet = await _userService.GetUser(userId);
+
+                    if (userToGet == null)
+                    {
+                        return new NotFoundObjectResult($"User with Id {userId} was not found.");
+                    }
+
+                    // Add User to Session
+                    if (userDictionary != null)
+                    {
+                        userDictionary[userId] = userToGet;
+
+                        // End Session Check
+                        // if (userDictionary.Count == 3)
+                        // {
+                        //     singleton.EndSession(uuid);
+                        // }
+                    }
+
+
+                    return new OkObjectResult(userToGet);
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    {
+                        Status = StatusCodes.Status500InternalServerError,
+                        e.Message
+                    });
+                }
             }
         }
 

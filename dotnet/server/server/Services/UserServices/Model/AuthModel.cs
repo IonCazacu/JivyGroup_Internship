@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace server.Services.UserServices.Model
 {
-    public class AuthModel
+    public class Auth
     {
         [Required()]
         public string? Username { get; set; }
