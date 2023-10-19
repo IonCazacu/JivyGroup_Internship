@@ -15,7 +15,7 @@ public class UserControllerTests
         [Fact]
         public async Task LoginUserWithValidCredentialsReturnsUser()
         {
-            AuthModel authModel = new()
+            Auth authModel = new()
             {
                 Username = "testuser",
                 Password = "testuser_password"
@@ -48,7 +48,7 @@ public class UserControllerTests
         [Fact]
         public async Task LoginUserWithNullCredentialsReturnsBadRequest()
         {
-            AuthModel authModel = new()
+            Auth authModel = new()
             {
                 Username = null,
                 Password = null
@@ -74,7 +74,7 @@ public class UserControllerTests
                 .ReturnsAsync(null as User);
 
             var controller = new UserController(_userServiceMock.Object);
-            var result = await controller.Login(new AuthModel
+            var result = await controller.Login(new Auth
             {
                 Username = "WrongTestUser",
                 Password = "WrongTestUsersPassword"
@@ -94,7 +94,7 @@ public class UserControllerTests
 
             var controller = new UserController(_userServiceMock.Object);
 
-            var result = await controller.Login(new AuthModel
+            var result = await controller.Login(new Auth
             {
                 Username = "test_username",
                 Password = "test_password"
@@ -166,7 +166,7 @@ public class UserControllerTests
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(200, okResult.StatusCode);
 
-            var paginationModel = Assert.IsType<PaginationModel>(okResult.Value);
+            var paginationModel = Assert.IsType<Pagination>(okResult.Value);
             Assert.Equal(users, paginationModel.Users);
         }
 
@@ -208,7 +208,7 @@ public class UserControllerTests
             var controller = new UserController(_userServiceMock.Object);
             var result = await controller.Get(cursor, limit);
 
-            var enumUserActionResult = Assert.IsType<ActionResult<PaginationModel>>(result);
+            var enumUserActionResult = Assert.IsType<ActionResult<Pagination>>(result);
             var statusCode = Assert.IsType<ObjectResult>(enumUserActionResult.Result);
             Assert.Equal(500, statusCode.StatusCode);
         }
