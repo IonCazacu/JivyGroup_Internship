@@ -110,4 +110,5 @@ const signupSchema = (watch: any): DynamicFieldData[] => {
     }
   ];
 };
+
 export default signupSchema;

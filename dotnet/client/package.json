@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hookform/resolvers": "^3.3.2",
     "web-vitals": "^2.1.4",
     "zod": "^3.22.4"
   },

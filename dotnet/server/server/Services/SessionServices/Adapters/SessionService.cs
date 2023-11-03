@@ -1,14 +1,17 @@
-namespace server.Services.UserServices.Session
+using server.Services.SessionServices.Contracts;
+
+namespace server.Services.SessionServices.Adapters
 {
-    public class Singleton
+    public class SessionService : ISessionService
     {
-        private Singleton() { }
+        private SessionService() { }
+
         private static readonly object _lock = new();
-        private static Singleton? _instance;
+        private static SessionService? _instance;
         private string? SessionUuid;
         private Dictionary<string, object>? Session;
 
-        public static Singleton Instance
+        public static SessionService Instance
         {
             get
             {
@@ -18,7 +21,7 @@ namespace server.Services.UserServices.Session
                     {
                         if (_instance == null)
                         {
-                            _instance = new Singleton
+                            _instance = new SessionService
                             {
                                 SessionUuid = Guid.NewGuid().ToString(),
                                 Session = new Dictionary<string, object>()
@@ -30,7 +33,6 @@ namespace server.Services.UserServices.Session
             }
         }
 
-        // Get Session Uuid
         public string? GetSessionUuid
         {
             get
@@ -56,8 +58,11 @@ namespace server.Services.UserServices.Session
 
         public object? GetSession(string key)
         {
-            if (_instance != null && _instance.Session != null && _instance.Session.ContainsKey(key))
-            {
+            if (
+                _instance != null &&
+                _instance.Session != null &&
+                _instance.Session.ContainsKey(key)
+            ) {
                 return _instance.Session[key];
             }
             return null;
@@ -65,8 +70,11 @@ namespace server.Services.UserServices.Session
 
         public void EndSession(string key)
         {
-            if (_instance != null && _instance.Session != null && _instance.Session.ContainsKey(key))
-            {
+            if (
+                _instance != null &&
+                _instance.Session != null &&
+                _instance.Session.ContainsKey(key)
+            ) {
                 _instance.Session.Remove(key);
             }
         }

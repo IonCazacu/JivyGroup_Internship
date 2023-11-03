@@ -4,8 +4,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using server.Services.UserServices.Model;
-using server.Services.UserServices.Ports;
+using server.Services.UserServices.Contracts;
+using server.Services.UserServices.Entities;
+using server.Services.UserServices.Entities.Authorization;
 
 namespace server.Services.UserServices.Authorization.Basic
 {
@@ -18,8 +19,8 @@ namespace server.Services.UserServices.Authorization.Basic
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IUserService userService)
-            : base (options, logger, encoder, clock)
+            IUserService userService
+        ) : base (options, logger, encoder, clock)
         {
             _userService = userService;
         }
@@ -35,7 +36,7 @@ namespace server.Services.UserServices.Authorization.Basic
             try
             {
                 var authenticationHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-                
+
                 // If authorization header doesn't contain basic, return fail
                 if (authenticationHeader.Scheme != "Basic")
                 {
@@ -58,11 +59,14 @@ namespace server.Services.UserServices.Authorization.Basic
                 }
 
                 // Store the client usernae and password
-                string username = credentials[0];
-                string password = credentials[1];
+                BasicAuthorization userToAuthenticate = new()
+                {
+                    Username = credentials[0],
+                    Password = credentials[1]
+                };
 
                 // Authenticate the user
-                User? user = await _userService.Login(username, password);
+                User? user = await _userService.AuthenticateUser(userToAuthenticate);
                 if (user == null)
                 {
                     return AuthenticateResult.Fail("Username or password is invalid");

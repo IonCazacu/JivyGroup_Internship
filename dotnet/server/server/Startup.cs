@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using server.Services.SessionServices.Adapters;
+using server.Services.SessionServices.Contracts;
 using server.Services.UserServices.Authorization.Basic;
-using server.Services.UserServices.Data;
+using server.Services.UserServices.Context;
 using server.Services.UserServices.UserModule;
 
 namespace server.Startup
@@ -39,14 +41,18 @@ namespace server.Startup
             services.AddDbContext<UserContext>(opt =>
             {
                 opt.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=./Database/Database.db");
+                    Configuration.GetConnectionString("DefaultConnection")
+                    ??
+                    "Data Source=./Database/Database.db");
             });
             
             services.AddCors(opt =>
             {
-                opt.AddPolicy("AllowLocalhost3000",
-                    builder => builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
+                opt.AddPolicy("AllowLocalhost3001",
+                    builder => builder.WithOrigins("http://localhost:3001").AllowAnyMethod().AllowAnyHeader());
             });
+
+            services.AddSingleton<ISessionServiceFactory, SessionServiceFactory>();
 
             services
                 .AddAuthentication("BasicAuthentication")
@@ -74,7 +80,7 @@ namespace server.Startup
 
             app.UseAuthorization();
 
-            app.UseCors("AllowLocalhost3000");
+            app.UseCors("AllowLocalhost3001");
 
             app.UseEndpoints(endpoints =>
             {

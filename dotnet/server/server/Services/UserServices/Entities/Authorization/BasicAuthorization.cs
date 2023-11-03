@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace server.Services.UserServices.Model
+namespace server.Services.UserServices.Entities.Authorization
 {
-    public class Auth
+    public class BasicAuthorization
     {
         [Required()]
         public string? Username { get; set; }

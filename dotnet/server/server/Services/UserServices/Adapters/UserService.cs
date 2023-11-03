@@ -1,25 +1,23 @@
-using Microsoft.EntityFrameworkCore;
-using server.Services.UserServices.Data;
-using server.Services.UserServices.Model;
-using server.Services.UserServices.Ports;
+using server.Services.UserServices.Contracts;
+using server.Services.UserServices.Entities;
+using server.Services.UserServices.Entities.Authorization;
 
 namespace server.Services.UserServices.Adapters
 {
     public class UserService : IUserService
     {
-        private readonly UserContext userContext;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(UserContext userContext)
+        public UserService(IUserRepository userRepository)
         {
-            this.userContext = userContext;
+            _userRepository = userRepository;
         }
 
-        public async Task<User?> Login(string username, string password)
+        public async Task<User?> AuthenticateUser(BasicAuthorization user)
         {
             try
             {
-                User? userToLogin = await userContext.Users.FirstOrDefaultAsync(
-                    u => u.Username == username && u.Password == password);
+                User? userToLogin = await _userRepository.AuthenticateUser(user);
 
                 if (userToLogin == null)
                 {
@@ -28,38 +26,48 @@ namespace server.Services.UserServices.Adapters
 
                 return userToLogin;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new Exception(e.Message);
+                throw;
             }
         }
 
-        public async Task<(IEnumerable<User>, int)> GetUsers(int cursor, int limit)
-        {
-            int maxId = await userContext.Users.MaxAsync(u => u.Id);
-
-            IEnumerable<User> users = await userContext.Users
-                .Select(u => new User
-                {
-                    Id = u.Id,
-                    Username = u.Username,
-                    Email = u.Email
-                })
-                .Where(u => u.Id > cursor && u.Id <= maxId)
-                .OrderBy(u => u.Id)
-                .Take(limit)
-                .ToListAsync();
-
-            int nextCursor = users.Any() ? users.Last().Id : -1;
-
-            return (users.Take(limit), nextCursor);
-        }
-
-        public async Task<User?> GetUser(int userId)
+        public async Task<Pagination?> GetUsers(int cursor, int limit)
         {
             try
             {
-                User? userToGet = await userContext.Users.FindAsync(userId);
+                var result = await _userRepository.GetUsers(cursor, limit);
+
+                if (
+                    result == null ||
+                    result.Users == null ||
+                    result.NextCursor == -1
+                ) {
+                    return null;
+                }
+                
+                IEnumerable<User> users = result.Users;
+                long nextCursor = result.NextCursor;
+                bool hasNextCursor = result.HasNextCursor;
+
+                return new Pagination
+                {
+                    Users = users,
+                    NextCursor = nextCursor,
+                    HasNextCursor = hasNextCursor
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<User?> GetUser(Guid userUuid)
+        {
+            try
+            {
+                User? userToGet = await _userRepository.GetUser(userUuid);
                 
                 if (userToGet == null)
                 {
@@ -68,69 +76,50 @@ namespace server.Services.UserServices.Adapters
                 
                 return userToGet;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new Exception(e.Message);
+                throw;
             }
         }
 
-        public async Task<User?> AddUser(User user)
-        {
-            User? userToAdd = userContext.Users.Where(u => u.Email == user.Email).FirstOrDefault();
-
-            if (userToAdd != null)
-            {
-                throw new IntegrityException("That email is already taken");
-            }
-
-            userContext.Users.Add(user);
-            await userContext.SaveChangesAsync();
-            
-            return user;
-        }
-
-        public async Task<User?> UpdateUser(int userId, User user)
+        public async Task<User> AddAsync(User user)
         {
             try
             {
-                User? userToUpdate = await userContext.Users.FindAsync(userId);
-
-                if (userToUpdate == null)
-                {
-                    return null;
-                }
-
-                userContext.Entry(userToUpdate).CurrentValues.SetValues(user);
-                await userContext.SaveChangesAsync();
-
-                return user;
+               return await _userRepository.AddAsync(user);
             }
-            catch (Exception e)
+            catch (IntegrityException)
             {
-                throw new Exception(e.Message);
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
-        public async Task<User?> DeleteUser(int userId)
+        public async Task<User?> UpdateAsync(User user)
         {
-            try
-            {
-                User? userToDelete = await userContext.Users.FindAsync(userId);
+           try
+           {
+               return await _userRepository.UpdateAsync(user);
+           }
+           catch (Exception)
+           {
+               throw;
+           }
+        }
 
-                if (userToDelete == null)
-                {
-                    return null;
-                }
-
-                userContext.Users.Remove(userToDelete);
-                await userContext.SaveChangesAsync();
-
-                return userToDelete;
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
+        public async Task<User?> DeleteAsync(User user)
+        {
+           try
+           {
+               return await _userRepository.DeleteAsync(user);
+           }
+           catch (Exception)
+           {
+               throw;
+           }
         }
     }
 }

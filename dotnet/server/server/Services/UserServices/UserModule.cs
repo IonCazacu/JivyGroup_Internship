@@ -1,5 +1,5 @@
 using server.Services.UserServices.Adapters;
-using server.Services.UserServices.Ports;
+using server.Services.UserServices.Contracts;
 
 namespace server.Services.UserServices.UserModule
 {
@@ -7,7 +7,9 @@ namespace server.Services.UserServices.UserModule
     {
         public static void Initialize(IServiceCollection services)
         {
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserFacade, UserFacade>();
         }
     }
 }
