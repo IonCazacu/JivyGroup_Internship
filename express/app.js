@@ -1,8 +1,12 @@
 const express = require('express');
 const path = require('path');
 
-const userRoutes = require(path.join(__dirname, 'server', 'src', 'routes', 'userRoutes'));
-const sequelize = require(path.join(__dirname, 'server', 'src', 'config', 'database'));
+const userRoutes = require(
+  path.join(__dirname, 'server', 'src', 'routes', 'userRoutes')
+);
+const sequelize = require(
+  path.join(__dirname, 'server', 'src', 'config', 'database')
+);
 
 
 sequelize
@@ -13,7 +17,7 @@ sequelize
     console.log('db is ready')
   })
   .catch((error) => {
-    console.log(`Unable to sync database: ${ error.message }`)
+    console.error(`Unable to sync database: ${ error.message }`)
   });
 
 
@@ -29,8 +33,9 @@ app.use('/api', userRoutes);
 
 
 app.get('/register', (req, res) => {
-  const index = path.join(__dirname, 'client', 'public', 'views', 'register.html')
-  res.sendFile(index);
+  const register = path.join(
+    __dirname, 'client', 'public', 'views', 'register.html');
+  res.sendFile(register);
 })
 
 
